@@ -1,0 +1,66 @@
+Metadata-Version: 2.1
+Name: cupy-cuda100
+Version: 8.6.0
+Summary: CuPy: A NumPy-compatible array library accelerated by CUDA
+Home-page: https://cupy.dev/
+Author: Seiya Tokui
+Author-email: tokui@preferred.jp
+License: MIT License
+Project-URL: Bug Tracker, https://github.com/cupy/cupy/issues
+Project-URL: Documentation, https://docs.cupy.dev/
+Project-URL: Source Code, https://github.com/cupy/cupy
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Cython
+Classifier: Topic :: Software Development
+Classifier: Topic :: Scientific/Engineering
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft :: Windows
+Requires-Python: >=3.5.0
+Requires-Dist: numpy (>=1.15)
+Requires-Dist: fastrlock (>=0.3)
+Provides-Extra: jenkins
+Requires-Dist: pytest (<4.2.0) ; extra == 'jenkins'
+Requires-Dist: attrs (<19.2.0) ; extra == 'jenkins'
+Requires-Dist: pytest-timeout ; extra == 'jenkins'
+Requires-Dist: pytest-cov (<2.10) ; extra == 'jenkins'
+Requires-Dist: coveralls ; extra == 'jenkins'
+Requires-Dist: codecov ; extra == 'jenkins'
+Requires-Dist: coverage (<5) ; extra == 'jenkins'
+Provides-Extra: setup
+Requires-Dist: Cython (>=0.29.22) ; extra == 'setup'
+Requires-Dist: fastrlock (>=0.3) ; extra == 'setup'
+Provides-Extra: stylecheck
+Requires-Dist: autopep8 (==1.5.5) ; extra == 'stylecheck'
+Requires-Dist: flake8 (==3.8.4) ; extra == 'stylecheck'
+Requires-Dist: pbr (==5.5.1) ; extra == 'stylecheck'
+Requires-Dist: pycodestyle (==2.6.0) ; extra == 'stylecheck'
+Provides-Extra: test
+Requires-Dist: pytest (<4.2.0) ; extra == 'test'
+Requires-Dist: attrs (<19.2.0) ; extra == 'test'
+
+.. image:: https://raw.githubusercontent.com/cupy/cupy/master/docs/image/cupy_logo_1000px.png
+   :width: 400
+
+CuPy : A NumPy-compatible array library accelerated by CUDA
+===========================================================
+
+`CuPy <https://cupy.dev/>`_ is an implementation of NumPy-compatible multi-dimensional array on CUDA.
+
+This is a CuPy wheel (precompiled binary) package for CUDA 10.0.
+You need to install `CUDA Toolkit 10.0 <https://developer.nvidia.com/cuda-toolkit-archive>`_ to use these packages.
+
+If you have another version of CUDA, or want to build from source, refer to the `Installation Guide <https://docs.cupy.dev/en/latest/install.html>`_ for instructions.
+
+

@@ -1,116 +1,121 @@
 import time
-import pycuda.gpuarray as gpuarray
 import numpy as np
-import skcuda.cublas as cublas
+import cupy as cp
+from io_module import read_text_matrix
+import pickle
+
+
 
 def postprocessing(info):
 
-    #Daylight matmul
-    daylight_matmul(info)
+    #Daylight matmul and calc_DA
+    daylight(info, 
+             reader = "Text",
+             matmul = "CPU")
+
 
     #Energy matmul
 
     pass
 
 
-def read_binary_matrix(path):
-    with open(path, 'rb') as reader:
+def daylight(info, reader, matmul):
 
+    if reader == "Text":
+        #Reading dc matrix
+        start = time.time()
+        dc_matrix = read_text_matrix(path = info["daylight_dc"])
+        end = time.time()
+        print(f"+++++ dc_matrix reading time: {(end-start)} [s] +++++\n")
 
-        #Reading header
-        for binary_line in reader:
-            line = binary_line.decode()
-            if "NROWS" in line:
-                nrows = int(line.split("=")[-1])
-            elif "NCOLS" in line:
-                ncols = int(line.split("=")[-1])
-            elif "NCOMP" in line:
-                ncomp = int(line.split("=")[-1])
-            elif "FORMAT" in line:
-                break
+        #Reading sky matrix
+        start = time.time()
+        sky_matrix = read_text_matrix(path = info["smx_O0_file"])
+        end = time.time()
+        print(f"+++++ sky_matrix reading time: {(end-start)} [s] +++++\n")
 
-        #Reading data
-        #https://stackoverflow.com/questions/11760095/convert-binary-string-to-numpy-array
-        data = np.fromfile(reader, dtype=np.dtype('>f4')).reshape(nrows, ncols, ncomp)
-        #data = np.fromfile(reader, dtype=np.float32).reshape(nrows, ncols, ncomp)
+    if matmul == "CPU":
+        #CPU (BLAS) matmul
+        start = time.time()
+        result_matrix = np.matmul(dc_matrix, sky_matrix)
+        end = time.time()
+        print(f"+++++ CPU matmul wall time: {(end-start)} [s] +++++\n")
 
-    return data
+        calc_da_cpu(info, result_matrix)
 
+    elif matmul == "GPU":
+        #Copy to host from device (from CPU to GPU)
+        start = time.time()
+        dc_matrix_gpu = cp.asarray(dc_matrix)
+        sky_matrix_gpu = cp.asarray(sky_matrix)
+        end = time.time()
+        print(f"+++++ CPU to GPU copy: {(end-start)} [s] +++++")
 
-def read_text_dc_matrix(path):
-    with open(path, 'r') as infile:
-        #Reading header
-        count = 0
-        for line in infile:
+        #GPU (cuBLAS) matmul
+        start = time.time()
+        result_matrix_gpu = cp.matmul(dc_matrix_gpu,sky_matrix_gpu)
+        end = time.time()
+        print(f"+++++ GPU matmul: {(end-start)} [s] +++++")
 
-            if "NROWS" in line:
-                nrows = int(line.split("=")[-1])
-            elif "NCOLS" in line:
-                ncols = int(line.split("=")[-1])
-            elif "NCOMP" in line:
-                ncomp = int(line.split("=")[-1])
-            elif "FORMAT" in line:
-                skiplines = count + 1
-                break
-            count += 1
-
-    data = np.loadtxt(path, skiprows = skiplines).reshape(nrows, ncols, ncomp)
-
-    #Taking out all but one color channel
-    stripped_data = np.zeros((nrows, ncols))
-    for i in range(nrows):
-        for j in range(ncols):
-            stripped_data[i][j] = data[i][j][0]
-
-    return stripped_data
-
-
-def read_text_sky_matrix(path):
-    with open(path, 'r') as infile:
-        #Reading header
-        count = 0
-        for line in infile:
-
-            if "NROWS" in line:
-                nrows = int(line.split("=")[-1])
-            elif "NCOLS" in line:
-                ncols = int(line.split("=")[-1])
-            elif "NCOMP" in line:
-                ncomp = int(line.split("=")[-1])
-            elif "FORMAT" in line:
-                skiplines = count + 1
-                break
-            count += 1
-
-    data = np.loadtxt(path, skiprows = skiplines).reshape(nrows, ncols, ncomp)
-
-    #Taking out all but one color channel
-    stripped_data = np.zeros((nrows, ncols))
-    for i in range(nrows):
-        for j in range(ncols):
-            stripped_data[i][j] = data[i][j][0]
-
-    return stripped_data
-
-
-def daylight_matmul(info):
-
-    dc_matrix = read_text_dc_matrix(path = info["daylight_dc"])
-    #print(dc_matrix)
-    #print(dc_matrix.shape)
-
-    sky_matrix = read_text_sky_matrix(path = info["smx_O0_file"])
-
-    start = time.time()
-    result = np.matmul(dc_matrix, sky_matrix)
-    end = time.time()
-    print(result.shape)
-    print(f"+++++ CPU matmul wall time: {(end-start)} [s] +++++")
-
-    #https://vitalitylearning.medium.com/a-short-notice-on-performing-matrix-multiplications-in-pycuda-cbfb00cf1450
-    start = time.time()
-    result = np.matmul(dc_matrix, sky_matrix)
-    end = time.time()
-    print(result.shape)
-    print(f"+++++ CPU matmul wall time: {(end-start)} [s] +++++")
+        #Copy to device from host (from GPU to CPU) 
+        start = time.time()
+        result_matrix = cp.asnumpy(result_matrix_gpu)
+        end = time.time()
+        print(f"+++++ GPU to CPU copy: {(end-start)} [s] +++++")
     
+    print(f"Problem memory size in kbytes: {(dc_matrix.nbytes + sky_matrix.nbytes + result_matrix.nbytes)/1000}")
+
+    
+def calc_da_cpu(info, result_matrix):
+
+    occ_sch = gen_occ_sch()
+    sch_idx = occ_sch == 1
+
+    #Calculate DA on all
+    data = result_matrix[:,sch_idx]
+    above_300 = (data*179) > 300 #179 lm/W; above 300 lux
+    da = (((above_300).sum(axis=1))/above_300.shape[1])*100
+
+    start_idx = 0
+    end_idx = 0
+    #For each room
+    for file in info["grid_files_daylight"]:
+
+        len_file = file_len(file)
+
+        end_idx += len_file
+
+        file_name = file.with_suffix(".pkl").name
+        with open(info["sim_folder"].joinpath(f"output\\da\\{file_name}"), 'wb') as outfile:
+            pickle.dump(da[start_idx:end_idx].tolist(), outfile, protocol=2) #Protocol 2 needed for GHpython to read it
+
+        start_idx += len_file
+
+        
+
+        
+
+
+
+def file_len(fname):
+    #Count lenght of file (i.e. numbers of points in file)
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
+
+
+def gen_occ_sch():
+    occ_sch = []
+    weekday = [0]*8 + [1]*9 + [0]*7
+    weekendday = [0]*24
+    for i in range(52):
+        for j in range(5):
+            occ_sch.extend(weekday)
+        for j in range(2):
+            occ_sch.extend(weekendday)
+    occ_sch.extend(weekendday)
+
+    assert len(occ_sch) == 8760
+
+    return np.array(occ_sch)

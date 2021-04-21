@@ -11,9 +11,9 @@
     <OutputPath>.</OutputPath>
     <Name>Ver_0_0_3</Name>
     <RootNamespace>Ver_0_0_3</RootNamespace>
-    <InterpreterId>MSBuild|Virtual_env|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|Virtuel_enviroment|$(MSBuildProjectFullPath)</InterpreterId>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>"C:\Simulation" "c:\radiance" "c:\accelerad" "C:\Simulation\DNK_Copenhagen.061800_IWEC\DNK_Copenhagen.061800_IWEC.epw" "18" "32"</CommandLineArguments>
+    <CommandLineArguments>"C:\Simulation" "c:\radiance" "c:\accelerad" "C:\Simulation\DNK_Copenhagen.061800_IWEC\DNK_Copenhagen.061800_IWEC.epw" "13820" "6051"</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -28,6 +28,9 @@
     <Compile Include="main.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="io_module.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="raytracing.py">
       <SubType>Code</SubType>
     </Compile>
@@ -39,14 +42,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="Virtual_env\">
-      <Id>Virtual_env</Id>
+    <Interpreter Include="Virtuel_enviroment\">
+      <Id>Virtuel_enviroment</Id>
       <Version>3.7</Version>
-      <Description>Virtual_env (Python 3.7 (32-bit))</Description>
+      <Description>Virtuel_enviroment (Python 3.7 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X86</Architecture>
+      <Architecture>X64</Architecture>
     </Interpreter>
   </ItemGroup>
   <ItemGroup>

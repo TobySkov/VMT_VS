@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from raytracing import raytracing
 from postprocessing import postprocessing
+from io_module import find_grid_files
 
 def main():
 
@@ -53,8 +54,14 @@ def main():
     info["smx_O0_file"] = info["epw_file"].with_suffix(".smx_O0")
     info["smx_O1_file"] = info["epw_file"].with_suffix(".smx_O1")
 
+    find_grid_files(info, type = "Daylight")
+    find_grid_files(info, type = "Energy")
+
+    if not os.path.exists(info["sim_folder"].joinpath(f"output\\da")):
+        os.makedirs(info["sim_folder"].joinpath(f"output\\da"))
+
     #Running raytracing
-    #raytracing(info)
+    raytracing(info)
 
     #Running postprocessing
     postprocessing(info)

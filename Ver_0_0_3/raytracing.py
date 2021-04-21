@@ -93,16 +93,8 @@ def find_rad_files(info, type):
     return scene
 
 
-def find_grid_files(info, type):
 
-    grid_folder = info["sim_folder"].joinpath(f"Raytracing\\{type}\\Radiance\\model\\grid")
 
-    grid_files = []
-    for file in os.listdir(grid_folder):
-        if file.endswith(".pts"):
-            grid_files.append(grid_folder.joinpath(file))
-
-    return grid_files
 
 
 
@@ -125,7 +117,7 @@ def run_rfluxmtx(info, resolution, type):
     run_command(info,
                 cmd_list, 
 				output_file_path = info[f"{type.lower()}_dc"],
-                input_files_list = find_grid_files(info, type))
+                input_files_list = info[f"grid_files_{type.lower()}"])
 
 
 def read_stdin(input_files_list):
