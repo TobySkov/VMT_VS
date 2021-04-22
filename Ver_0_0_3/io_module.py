@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from pathlib import Path
 
 def read_text_matrix(path):
 
@@ -59,8 +60,16 @@ def find_grid_files(info, type):
     grid_folder = info["sim_folder"].joinpath(f"Raytracing\\{type}\\Radiance\\model\\grid")
 
     grid_files = []
-    for file in os.listdir(grid_folder):
-        if file.endswith(".pts"):
-            grid_files.append(grid_folder.joinpath(file))
+
+    if type == "Daylight":
+        for room in info["room_info"]:
+            a = room["name"].split("_")
+            grid_files.append(grid_folder.joinpath(f"{a[0]}_{a[1]}.pts"))
+
+    elif type == "Energy":
+        for room in info["room_info"]:
+            for aperture in room["aperture_identifiers_list"]:
+                a = grid_folder.joinpath(aperture + "_SensorGrid.pts")
+                grid_files.append(a)
 
     info[f"grid_files_{type.lower()}"] = grid_files

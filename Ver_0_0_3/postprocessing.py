@@ -9,14 +9,54 @@ import pickle
 def postprocessing(info):
 
     #Daylight matmul and calc_DA
-    daylight(info, 
+    #daylight(info, 
+    #         reader = "Text",
+    #         matmul = "CPU")
+
+
+    #Energy matmul
+    energy(info, 
              reader = "Text",
              matmul = "CPU")
 
 
-    #Energy matmul
 
-    pass
+
+def energy(info, reader, matmul):
+
+    if reader == "Text":
+        #Reading dc matrix
+        start = time.time()
+        dc_matrix = read_text_matrix(path = info["energy_dc"])
+        end = time.time()
+        print(f"+++++ dc_matrix reading time: {(end-start)} [s] +++++\n")
+
+        #Reading sky matrix
+        start = time.time()
+        sky_matrix = read_text_matrix(path = info["smx_O1_file"])
+        end = time.time()
+        print(f"+++++ sky_matrix reading time: {(end-start)} [s] +++++\n")
+
+    if matmul == "CPU":
+        #CPU (BLAS) matmul
+        start = time.time()
+        Phi_sol_2d_Wm2 = np.matmul(dc_matrix, sky_matrix)
+        end = time.time()
+        print(f"+++++ CPU matmul wall time: {(end-start)} [s] +++++\n")
+
+    Phi_sol_2d_W = np.zeros((info["no_energy_sensorpoints"], 8760))
+
+    aperture_areas = []
+    for room in info["room_info"]:
+        aperture_areas.extend(room["aperture_areas_list"])
+        
+    aperture_areas = np.array(aperture_areas)
+
+    for i in range(8760):
+        Phi_sol_2d_W[:,i] = np.dot(Phi_sol_2d_Wm2[:,i],aperture_areas)
+        print(np.mean(Phi_sol_2d_Wm2[:,i]))
+
+    info["Phi_sol_2d_W"] = Phi_sol_2d_W
 
 
 def daylight(info, reader, matmul):

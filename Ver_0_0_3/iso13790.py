@@ -6,8 +6,6 @@ from CPP_ISO13790 import run_CPP_ISO13790
 def run_ISO13790():
 
 
-
-
     H__tr_op
     H__tr_w
     A__f

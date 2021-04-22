@@ -7,6 +7,7 @@ from raytracing import raytracing
 #from ISO13790 import run_ISO13790
 from postprocessing import postprocessing
 from io_module import find_grid_files
+import pickle
 
 def main():
 
@@ -55,20 +56,24 @@ def main():
     info["smx_O0_file"] = info["epw_file"].with_suffix(".smx_O0")
     info["smx_O1_file"] = info["epw_file"].with_suffix(".smx_O1")
 
+    if not os.path.exists(info["sim_folder"].joinpath("output\\da")):
+        os.makedirs(info["sim_folder"].joinpath("output\\da"))
+
+    info["room_info_pkl"] = info["sim_folder"].joinpath("ISO13790\\rooms_info.pkl")
+    with open(info["room_info_pkl"], 'rb') as pkl_file:
+        info["room_info"] = pickle.load(pkl_file)
+
     find_grid_files(info, type = "Daylight")
     find_grid_files(info, type = "Energy")
 
-    if not os.path.exists(info["sim_folder"].joinpath(f"output\\da")):
-        os.makedirs(info["sim_folder"].joinpath(f"output\\da"))
-
     #Running raytracing
-    raytracing(info)
-
-    #Running ISO13790
-    #run_ISO13790(info)
+    #raytracing(info)
 
     #Running postprocessing
     postprocessing(info)
+
+    #Running ISO13790
+    #run_ISO13790(info)
     
     end = time.time()
     print("+++++ VMT backend - done +++++")
