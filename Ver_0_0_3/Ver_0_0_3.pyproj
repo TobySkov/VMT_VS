@@ -11,9 +11,9 @@
     <OutputPath>.</OutputPath>
     <Name>Ver_0_0_3</Name>
     <RootNamespace>Ver_0_0_3</RootNamespace>
-    <InterpreterId>MSBuild|Virtuel_enviroment|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>Global|PythonCore|3.7</InterpreterId>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>"C:\Simulation" "c:\radiance" "c:\accelerad" "C:\Simulation\DNK_Copenhagen.061800_IWEC\DNK_Copenhagen.061800_IWEC.epw" "13820" "6051"</CommandLineArguments>
+    <CommandLineArguments>"C:\Simulation" "c:\radiance" "c:\accelerad" "C:\Simulation\DNK_Copenhagen.061800_IWEC\DNK_Copenhagen.061800_IWEC.epw" "103473" "5569"</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -34,7 +34,7 @@
     <Compile Include="raytracing.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iso13790.py">
+    <Compile Include="ISO13790.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="postprocessing.py">
@@ -42,18 +42,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="Virtuel_enviroment\">
-      <Id>Virtuel_enviroment</Id>
-      <Version>3.7</Version>
-      <Description>Virtuel_enviroment (Python 3.7 (64-bit))</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X64</Architecture>
-    </Interpreter>
+    <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="requirements.txt" />
+    <ProjectReference Include="..\CPP_ISO13790\CPP_ISO13790.vcxproj">
+      <Name>CPP_ISO13790</Name>
+      <Project>{1b24bb89-d7f6-4872-b2b7-a16c38b542d1}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.7" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

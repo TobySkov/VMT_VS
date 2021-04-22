@@ -4,6 +4,7 @@ import time
 import shutil
 from pathlib import Path
 from raytracing import raytracing
+#from ISO13790 import run_ISO13790
 from postprocessing import postprocessing
 from io_module import find_grid_files
 
@@ -62,6 +63,9 @@ def main():
 
     #Running raytracing
     raytracing(info)
+
+    #Running ISO13790
+    #run_ISO13790(info)
 
     #Running postprocessing
     postprocessing(info)
