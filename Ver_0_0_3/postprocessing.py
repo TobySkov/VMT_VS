@@ -6,7 +6,7 @@ import pickle
 
 
 
-def postprocessing(info):
+def raytracing_postprocessing(info):
 
     #Daylight matmul and calc_DA
     #daylight(info, 
@@ -54,7 +54,6 @@ def energy(info, reader, matmul):
 
     for i in range(8760):
         Phi_sol_2d_W[:,i] = np.dot(Phi_sol_2d_Wm2[:,i],aperture_areas)
-        print(np.mean(Phi_sol_2d_Wm2[:,i]))
 
     info["Phi_sol_2d_W"] = Phi_sol_2d_W
 
@@ -133,9 +132,6 @@ def calc_da_cpu(info, result_matrix):
 
         
 
-        
-
-
 
 def file_len(fname):
     #Count lenght of file (i.e. numbers of points in file)
@@ -143,6 +139,7 @@ def file_len(fname):
         for i, l in enumerate(f):
             pass
     return i + 1
+
 
 
 def gen_occ_sch():

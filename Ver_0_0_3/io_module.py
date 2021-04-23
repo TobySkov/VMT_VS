@@ -73,3 +73,13 @@ def find_grid_files(info, type):
                 grid_files.append(a)
 
     info[f"grid_files_{type.lower()}"] = grid_files
+
+
+def read_latitude(info):
+    with open(info["epw_file"], "r") as infile:
+        line = infile.readline()
+        latitude = float(line.split(",")[6])
+    if latitude >= 0:
+        info["hemisphere"] = "northern"
+    elif latitude < 0:
+        info["hemisphere"] = "southern"

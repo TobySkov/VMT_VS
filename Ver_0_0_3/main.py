@@ -2,12 +2,13 @@ import os
 import sys
 import time
 import shutil
+import pickle
 from pathlib import Path
 from raytracing import raytracing
-#from ISO13790 import run_ISO13790
-from postprocessing import postprocessing
-from io_module import find_grid_files
-import pickle
+from ISO13790 import run_ISO13790
+from postprocessing import raytracing_postprocessing
+from io_module import find_grid_files, read_latitude
+
 
 def main():
 
@@ -63,17 +64,23 @@ def main():
     with open(info["room_info_pkl"], 'rb') as pkl_file:
         info["room_info"] = pickle.load(pkl_file)
 
+    info["theta__e_pkl"] = info["sim_folder"].joinpath("ISO13790\\theta__e.pkl")
+    with open(info["theta__e_pkl"], 'rb') as pkl_file:
+        info["theta__e"] = pickle.load(pkl_file)
+
     find_grid_files(info, type = "Daylight")
     find_grid_files(info, type = "Energy")
+
+    read_latitude(info)
 
     #Running raytracing
     #raytracing(info)
 
     #Running postprocessing
-    postprocessing(info)
+    raytracing_postprocessing(info)
 
     #Running ISO13790
-    #run_ISO13790(info)
+    run_ISO13790(info)
     
     end = time.time()
     print("+++++ VMT backend - done +++++")
