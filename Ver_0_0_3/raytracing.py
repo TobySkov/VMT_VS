@@ -1,19 +1,21 @@
 import os
+import time
 from subprocess import Popen, PIPE
 import numpy as np
+from io_module import timer
 
 def raytracing(info):
 
-    #Create daylight and energy skies
-    run_epw2wea(info)
-    run_gendaymtx(info,spektrum = "visible spektrum")
-    run_gendaymtx(info,spektrum = "full spektrum")
+    #Creating skies
+    timer(run_epw2wea, info)
+    timer(run_gendaymtx, info, "visible spektrum")
+    timer(run_gendaymtx, info, "full spektrum")
 
     #Run daylight raytracing command
-    run_rfluxmtx(info, resolution = 2, type = "Daylight")
+    timer(run_rfluxmtx, info, 2, "Daylight")
 
     #Run energy raytracing command
-    run_rfluxmtx(info, resolution = 2, type = "Energy")
+    timer(run_rfluxmtx, info, 2, "Energy")
 
 
 

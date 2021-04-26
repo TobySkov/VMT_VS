@@ -1,4 +1,7 @@
 import os
+import shutil
+import pickle
+import time
 import numpy as np
 from pathlib import Path
 
@@ -55,6 +58,18 @@ def read_binary_matrix(path):
     return data
 
 
+
+#https://stackoverflow.com/questions/803616/passing-functions-with-arguments-to-another-function-in-python
+def timer(func, *args):
+    start = time.time()
+    out = func(*args)
+    end = time.time()
+    print(f"+++++ {func.__name__}, wall time: {end-start} [s] +++++")
+    return out
+
+
+
+
 def find_grid_files(info, type):
 
     grid_folder = info["sim_folder"].joinpath(f"Raytracing\\{type}\\Radiance\\model\\grid")
@@ -83,3 +98,53 @@ def read_latitude(info):
         info["hemisphere"] = "northern"
     elif latitude < 0:
         info["hemisphere"] = "southern"
+
+
+
+
+
+
+def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
+
+    info_pkl = sim_folder.joinpath("info.pkl")
+    with open(info_pkl, 'rb') as pkl_file:
+        info_ini = pickle.load(pkl_file)
+
+    src = vmt_folder.joinpath("rfluxsky.rad")
+    dst = Path(info_ini["epw_file"]).with_name("rfluxsky.rad")
+    shutil.copy(src,dst)
+
+    info = {"vmt_folder": vmt_folder,
+            "sim_folder": sim_folder,
+            "radiance_folder": radiance_folder,
+            "accelerad_folder": accelerad_folder,
+            "epw_file": Path(info_ini["epw_file"]),
+            "rfluxsky": dst,
+            "no_daylight_sensorpoints": Path(info_ini["no_daylight_sensorpoints"]),
+            "no_energy_sensorpoints": Path(info_ini["no_energy_sensorpoints"])}
+
+    info["daylight_dc"] = info["sim_folder"].joinpath(f"output\\daylight_dc.txt")
+    info["energy_dc"] = info["sim_folder"].joinpath(f"output\\energy_dc.txt")
+    if not os.path.exists(info["daylight_dc"].parent):
+        os.makedirs(info[f"daylight_dc"].parent)
+
+    info["smx_O0_file"] = info["epw_file"].with_suffix(".smx_O0")
+    info["smx_O1_file"] = info["epw_file"].with_suffix(".smx_O1")
+
+    if not os.path.exists(info["sim_folder"].joinpath("output\\da")):
+        os.makedirs(info["sim_folder"].joinpath("output\\da"))
+
+    info["room_info_pkl"] = info["sim_folder"].joinpath("ISO13790\\rooms_info.pkl")
+    with open(info["room_info_pkl"], 'rb') as pkl_file:
+        info["room_info"] = pickle.load(pkl_file)
+
+    info["theta__e_pkl"] = info["sim_folder"].joinpath("ISO13790\\theta__e.pkl")
+    with open(info["theta__e_pkl"], 'rb') as pkl_file:
+        info["theta__e"] = pickle.load(pkl_file)
+
+    find_grid_files(info, type = "Daylight")
+    find_grid_files(info, type = "Energy")
+
+    read_latitude(info)
+
+    return info

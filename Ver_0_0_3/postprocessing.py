@@ -1,7 +1,7 @@
 import time
 import numpy as np
 import cupy as cp
-from io_module import read_text_matrix
+from io_module import read_text_matrix, timer
 import pickle
 
 
@@ -9,9 +9,9 @@ import pickle
 def raytracing_postprocessing(info):
 
     #Daylight matmul and calc_DA
-    #daylight(info, 
-    #         reader = "Text",
-    #         matmul = "CPU")
+    daylight(info, 
+             reader = "Text",
+             matmul = "CPU")
 
 
     #Energy matmul
@@ -26,24 +26,18 @@ def energy(info, reader, matmul):
 
     if reader == "Text":
         #Reading dc matrix
-        start = time.time()
-        dc_matrix = read_text_matrix(path = info["energy_dc"])
-        end = time.time()
-        print(f"+++++ dc_matrix reading time: {(end-start)} [s] +++++\n")
+        dc_matrix = timer(read_text_matrix, info["energy_dc"])
 
         #Reading sky matrix
-        start = time.time()
-        sky_matrix = read_text_matrix(path = info["smx_O1_file"])
-        end = time.time()
-        print(f"+++++ sky_matrix reading time: {(end-start)} [s] +++++\n")
+        sky_matrix = timer(read_text_matrix, info["smx_O1_file"])
+
 
     if matmul == "CPU":
         #CPU (BLAS) matmul
-        start = time.time()
-        Phi_sol_2d_Wm2 = np.matmul(dc_matrix, sky_matrix)
-        end = time.time()
-        print(f"+++++ CPU matmul wall time: {(end-start)} [s] +++++\n")
+        Phi_sol_2d_Wm2 = timer(np.matmul, dc_matrix, sky_matrix)
 
+
+    #Multiplying with relevant window areas
     Phi_sol_2d_W = np.zeros((info["no_energy_sensorpoints"], 8760))
 
     aperture_areas = []
@@ -62,23 +56,15 @@ def daylight(info, reader, matmul):
 
     if reader == "Text":
         #Reading dc matrix
-        start = time.time()
-        dc_matrix = read_text_matrix(path = info["daylight_dc"])
-        end = time.time()
-        print(f"+++++ dc_matrix reading time: {(end-start)} [s] +++++\n")
+        dc_matrix = timer(read_text_matrix, info["daylight_dc"])
 
         #Reading sky matrix
-        start = time.time()
-        sky_matrix = read_text_matrix(path = info["smx_O0_file"])
-        end = time.time()
-        print(f"+++++ sky_matrix reading time: {(end-start)} [s] +++++\n")
+        sky_matrix = timer(read_text_matrix, info["smx_O0_file"])
+
 
     if matmul == "CPU":
         #CPU (BLAS) matmul
-        start = time.time()
-        result_matrix = np.matmul(dc_matrix, sky_matrix)
-        end = time.time()
-        print(f"+++++ CPU matmul wall time: {(end-start)} [s] +++++\n")
+        result_matrix = timer(np.matmul, dc_matrix, sky_matrix)
 
         calc_da_cpu(info, result_matrix)
 

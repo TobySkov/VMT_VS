@@ -14,7 +14,7 @@ namespace py = pybind11;
 
 
 
-inline void temperature(const double& A__m, const double& A__t, const double& H__tr_w, const double& H__tr_is, const double& H__tr_ms,
+inline void compute(const double& A__m, const double& A__t, const double& H__tr_w, const double& H__tr_is, const double& H__tr_ms,
     const double& H__tr_em, const double& C__m,
     const double& Phi__sol, const double& Phi__int, const double& H__ve,
     const double& theta__e, const double& theta__sup, const double& theta__m_tm1,
@@ -122,7 +122,7 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
         theta__sup = ptr_theta__e[i];
         H__ve = ptr_H__ve[i];
 
-        temperature(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
+        compute(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
             Phi__HC_nd_0, theta__m_t_0, theta__s_0, theta__air_0);
 
         if (setpoint_heating <= theta__air_0 && theta__air_0 <= setpoint_cooling) { //Free floating conditions
@@ -136,7 +136,7 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
         }
         else {
 
-            temperature(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
+            compute(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
                 Phi__HC_nd_10, theta__m_t_10, theta__s_10, theta__air_10);
 
             //Establishing what target to reach for/interpolate to
@@ -149,7 +149,7 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
 
             Phi__HC_nd = Phi__HC_nd_10 * ((theta__air_set - theta__air_0) / (theta__air_10 - theta__air_0));
 
-            temperature(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
+            compute(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
                 Phi__HC_nd, theta__m_t, theta__s, theta__air);
 
             theta__m_tm1 = theta__m_t;

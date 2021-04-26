@@ -4,7 +4,8 @@ from CPP_ISO13790 import run_CPP_ISO13790
 from postprocessing import gen_occ_sch
 
 
-
+def ISO13790(info):
+    run_ISO13790(info)
 
 def run_ISO13790(info):
 
@@ -29,18 +30,24 @@ def run_ISO13790(info):
 
     start_idx = 0
     end_idx = 0
+
+    theta__s = np.zeros((8760))
+    theta__air = np.zeros((8760))
+    Phi__HC_nd = np.zeros((8760))
+
     for i, room in enumerate(info["room_info"]):
+
         #For each room
         H__tr_op = room["H__tr_op"]
         H__tr_w = room["H__tr_w"]
         A__f = room["A__f"]
 
-        A__t = A__f*4.5 #Page 25 pdf
-        A__m = A__f*2.5 #page 68 pdf (medium)
-        C__m = A__f*165000 #page 68 pdf (medium)
+        A__t = A__f*4.5         #Page 25 pdf
+        A__m = A__f*2.5         #page 68 pdf (medium)
+        C__m = A__f*165000      #page 68 pdf (medium)
 
-        H__tr_is = 3.45*A__t #Page 25 pdf
-        H__tr_ms = 9.1*A__m  #Page 66 pdf
+        H__tr_is = 3.45*A__t    #Page 25 pdf
+        H__tr_ms = 9.1*A__m     #Page 66 pdf
         H__tr_em = 1/(1/H__tr_op - 1/H__tr_ms) #Page 66 pdf
 
         params = np.array([H__tr_em, H__tr_is, H__tr_w, H__tr_ms,
@@ -56,6 +63,13 @@ def run_ISO13790(info):
         H__ve = H__ve_infil_1_m2*room["exposed_area"] + H__ve_venti_1_m2*room["A__f"]
 
         result = run_CPP_ISO13790(theta__e, Phi__sol, Phi__int, H__ve, params)
+
+        #Unpacking results
+        theta__s = result[0:8760]
+        theta__air = result[8760:(2*8760)]
+        Phi__HC_nd = result[(2*8760):(3*8760)]
+
+
     
 
 
