@@ -26,7 +26,7 @@ def main():
                        radiance_folder, accelerad_folder)
 
     #Running raytracing
-    raytracing(info)
+    #raytracing(info)
 
     #Running postprocessing
     raytracing_postprocessing(info)

@@ -120,8 +120,8 @@ def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
             "accelerad_folder": accelerad_folder,
             "epw_file": Path(info_ini["epw_file"]),
             "rfluxsky": dst,
-            "no_daylight_sensorpoints": Path(info_ini["no_daylight_sensorpoints"]),
-            "no_energy_sensorpoints": Path(info_ini["no_energy_sensorpoints"])}
+            "no_daylight_sensorpoints": int(info_ini["no_daylight_sensorpoints"]),
+            "no_energy_sensorpoints": int(info_ini["no_energy_sensorpoints"])}
 
     info["daylight_dc"] = info["sim_folder"].joinpath(f"output\\daylight_dc.txt")
     info["energy_dc"] = info["sim_folder"].joinpath(f"output\\energy_dc.txt")
@@ -133,6 +133,9 @@ def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
 
     if not os.path.exists(info["sim_folder"].joinpath("output\\da")):
         os.makedirs(info["sim_folder"].joinpath("output\\da"))
+
+    if not os.path.exists(info["sim_folder"].joinpath("output\\ISO13790")):
+        os.makedirs(info["sim_folder"].joinpath("output\\ISO13790"))
 
     info["room_info_pkl"] = info["sim_folder"].joinpath("ISO13790\\rooms_info.pkl")
     with open(info["room_info_pkl"], 'rb') as pkl_file:

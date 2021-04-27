@@ -47,7 +47,14 @@ def energy(info, reader, matmul):
     aperture_areas = np.array(aperture_areas)
 
     for i in range(8760):
-        Phi_sol_2d_W[:,i] = np.dot(Phi_sol_2d_Wm2[:,i],aperture_areas)
+        
+        Phi_sol_2d_W[:,i] = np.multiply(Phi_sol_2d_Wm2[:,i],aperture_areas)
+        
+        #print(Phi_sol_2d_Wm2[:,i])
+        #print(aperture_areas)
+        #print("\n")
+        #print(Phi_sol_2d_W[:,i])
+        #print("\n\n\n")
 
     info["Phi_sol_2d_W"] = Phi_sol_2d_W
 
