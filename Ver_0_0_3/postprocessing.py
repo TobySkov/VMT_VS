@@ -9,32 +9,30 @@ import pickle
 def raytracing_postprocessing(info):
 
     #Daylight matmul and calc_DA
-    daylight(info, 
-             reader = "Text",
-             matmul = "CPU")
+    daylight(info)
 
-
-    #Energy matmul
-    energy(info, 
-             reader = "Text",
-             matmul = "CPU")
+    #Energy matmul 
+    energy(info)
 
 
 
 
 def energy(info, reader, matmul):
 
-    if reader == "Text":
+    if info["raytracing_output"] == "text":
         #Reading dc matrix
-        dc_matrix = timer(read_text_matrix, info["energy_dc"])
-
+        energy_dc_matrix = timer(read_text_matrix, info["energy_dc_matrix"])
         #Reading sky matrix
-        sky_matrix = timer(read_text_matrix, info["smx_O1_file"])
+        energy_sky_matrix = timer(read_text_matrix, info["energy_sky_matrix"])
+
+    elif info["raytracing_output"] == "binary":
+        energy_dc_matrix = info["energy_dc_matrix"]
+        energy_sky_matrix = info["energy_sky_matrix"]
 
 
-    if matmul == "CPU":
+    if info["matmul_hardware"] == "CPU":
         #CPU (BLAS) matmul
-        Phi_sol_2d_Wm2 = timer(np.matmul, dc_matrix, sky_matrix)
+        Phi_sol_2d_Wm2 = timer(np.matmul, energy_dc_matrix, energy_sky_matrix)
 
 
     #Multiplying with relevant window areas
@@ -43,39 +41,33 @@ def energy(info, reader, matmul):
     aperture_areas = []
     for room in info["room_info"]:
         aperture_areas.extend(room["aperture_areas_list"])
-        
     aperture_areas = np.array(aperture_areas)
 
     for i in range(8760):
-        
         Phi_sol_2d_W[:,i] = np.multiply(Phi_sol_2d_Wm2[:,i],aperture_areas)
         
-        #print(Phi_sol_2d_Wm2[:,i])
-        #print(aperture_areas)
-        #print("\n")
-        #print(Phi_sol_2d_W[:,i])
-        #print("\n\n\n")
-
     info["Phi_sol_2d_W"] = Phi_sol_2d_W
 
 
 def daylight(info, reader, matmul):
 
-    if reader == "Text":
+    if info["raytracing_output"] == "text":
         #Reading dc matrix
-        dc_matrix = timer(read_text_matrix, info["daylight_dc"])
-
+        daylight_dc_matrix = timer(read_text_matrix, info["daylight_dc_matrix"])
         #Reading sky matrix
-        sky_matrix = timer(read_text_matrix, info["smx_O0_file"])
+        daylight_sky_matrix = timer(read_text_matrix, info["daylight_sky_matrix"])
 
+    elif info["raytracing_output"] == "binary":
+        daylight_dc_matrix = info["daylight_dc_matrix"]
+        daylight_sky_matrix = info["daylight_sky_matrix"]
 
-    if matmul == "CPU":
+    if info["matmul_hardware"] == "cpu":
         #CPU (BLAS) matmul
         result_matrix = timer(np.matmul, dc_matrix, sky_matrix)
 
         calc_da_cpu(info, result_matrix)
 
-    elif matmul == "GPU":
+    elif info["matmul_hardware"] == "gpu":
         #Copy to host from device (from CPU to GPU)
         start = time.time()
         dc_matrix_gpu = cp.asarray(dc_matrix)

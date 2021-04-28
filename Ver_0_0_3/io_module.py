@@ -123,13 +123,13 @@ def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
             "no_daylight_sensorpoints": int(info_ini["no_daylight_sensorpoints"]),
             "no_energy_sensorpoints": int(info_ini["no_energy_sensorpoints"])}
 
-    info["daylight_dc"] = info["sim_folder"].joinpath(f"output\\daylight_dc.txt")
-    info["energy_dc"] = info["sim_folder"].joinpath(f"output\\energy_dc.txt")
-    if not os.path.exists(info["daylight_dc"].parent):
-        os.makedirs(info[f"daylight_dc"].parent)
+    info["daylight_dc_matrix"] = info["sim_folder"].joinpath(f"output\\daylight_dc.txt")
+    info["energy_dc_matrix"] = info["sim_folder"].joinpath(f"output\\energy_dc.txt")
+    if not os.path.exists(info["daylight_dc_matrix"].parent):
+        os.makedirs(info[f"daylight_dc_matrix"].parent)
 
-    info["smx_O0_file"] = info["epw_file"].with_suffix(".smx_O0")
-    info["smx_O1_file"] = info["epw_file"].with_suffix(".smx_O1")
+    info["daylight_sky_matrix"] = info["epw_file"].with_suffix(".smx_O0")
+    info["energy_sky_matrix"] = info["epw_file"].with_suffix(".smx_O1")
 
     if not os.path.exists(info["sim_folder"].joinpath("output\\da")):
         os.makedirs(info["sim_folder"].joinpath("output\\da"))
@@ -149,5 +149,10 @@ def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
     find_grid_files(info, type = "Energy")
 
     read_latitude(info)
+
+    info["radiance_bin"] = info["radiance_folder"].joinpath("bin")
+    info["radiance_lib"] = info["radiance_folder"].joinpath("lib")
+    info["accelerad_bin"] = info["accelerad_folder"].joinpath("bin")
+    info["accelerad_lib"] = info["accelerad_folder"].joinpath("lib")
 
     return info

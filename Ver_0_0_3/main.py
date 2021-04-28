@@ -25,14 +25,17 @@ def main():
     info = define_dict(vmt_folder, sim_folder, 
                        radiance_folder, accelerad_folder)
 
+    info["raytracing_output"] = "binary" #Options: "binary"/"text"
+    info["matmul_hardware"] = "cpu" #Options: "cpu"/"gpu"
+
     #Running raytracing
-    #raytracing(info)
+    raytracing(info)
 
     #Running postprocessing
-    raytracing_postprocessing(info)
+    #raytracing_postprocessing(info)
 
     #Running ISO13790
-    ISO13790(info)
+    #ISO13790(info)
     
     end = time.time()
     print("+++++ VMT backend - done +++++")
