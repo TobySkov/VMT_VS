@@ -27,15 +27,16 @@ def main():
 
     info["raytracing_output"] = "binary" #Options: "binary"/"text"
     info["matmul_hardware"] = "cpu" #Options: "cpu"/"gpu"
+    info["raytracing_resolution"] = 0 #Options 0/1/2
 
     #Running raytracing
     raytracing(info)
 
     #Running postprocessing
-    #raytracing_postprocessing(info)
+    raytracing_postprocessing(info)
 
     #Running ISO13790
-    #ISO13790(info)
+    ISO13790(info)
     
     end = time.time()
     print("+++++ VMT backend - done +++++")

@@ -12,10 +12,10 @@ def raytracing(info):
     timer(run_gendaymtx, info, "energy")
 
     #Run daylight raytracing command
-    timer(run_rfluxmtx, info, 2, "daylight")
+    timer(run_rfluxmtx, info, info["raytracing_resolution"], "daylight")
 
     #Run energy raytracing command
-    timer(run_rfluxmtx, info, 2, "energy")
+    timer(run_rfluxmtx, info, info["raytracing_resolution"], "energy")
 
 
 
@@ -98,7 +98,7 @@ def run_gendaymtx(info,
             for j, hour in enumerate(patch_year_split):
                 sky_matrix[i][j] = hour.split(" ")[0] #Only reading one channel
         info[f"{type}_sky_matrix"] = sky_matrix
-        print("Done - Saving binary output")
+        print("DONE - Saving binary output")
         
 
 
@@ -152,7 +152,7 @@ def run_rfluxmtx(info, resolution, type):
             for j in range(146):
                 dc_matrix[i][j] = pts_split[j*3]
         info[f"{type}_dc_matrix"] = dc_matrix
-        print("Done - Saving binary output")
+        print("DONE - Saving binary output")
 
     
 

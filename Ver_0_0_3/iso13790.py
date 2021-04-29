@@ -29,36 +29,36 @@ def window_output(info):
 
     theta__e = np.array(info["theta__e"])
 
-    count = 0
+    start_idx = 0
+    end_idx = 0
     for i, room in enumerate(info["room_info"]):
         theta__s = room["theta__s"]
         U__window = room["U__window"]
 
         for j, aperture_name in enumerate(room["aperture_identifiers_list"]):
-            aperture_area = room["aperture_areas_list"][j]
+            aperture_mesh_areas = np.array(room["aperture_areas_list"][j])
 
             #This will be positive, when heat going from outside to inside
             #   just like solar gain and HC load.
-            window_HC = (theta__e-theta__s)*U__window*aperture_area
+            window_HC = np.matmul(np.reshape((U__window*aperture_mesh_areas),(len(aperture_mesh_areas),1)), np.reshape((theta__e-theta__s),(1,8760)))
             
-            Phi_aperture = info["Phi_sol_2d_W"][count,:]
+            end_idx += len(aperture_mesh_areas)
+            Phi_aperture = info["Phi_sol_2d_W"][start_idx:end_idx,:]
+            start_idx += len(aperture_mesh_areas)
 
             if info["hemisphere"] == "northern":
-                summer_window_HC = window_HC[sum_idx[0]:sum_idx[1]].sum()/1000 #Translated to kWh
-                winter_window_HC = (window_HC[win1_idx[0]:win1_idx[1]].sum() + window_HC[win2_idx[0]:win2_idx[1]].sum())/1000 #Translated to kWh
+                summer_window_HC = window_HC[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
+                winter_window_HC = (window_HC[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + window_HC[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
 
-                summer_window_Phi = Phi_aperture[sum_idx[0]:sum_idx[1]].sum()/1000 #Translated to kWh
-                winter_window_Phi = (Phi_aperture[win1_idx[0]:win1_idx[1]].sum() + Phi_aperture[win2_idx[0]:win2_idx[1]].sum())/1000 #Translated to kWh
+                summer_window_Phi = Phi_aperture[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
+                winter_window_Phi = (Phi_aperture[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + Phi_aperture[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
 
             elif info["hemisphere"] == "southern":
-                summer_window_HC = (window_HC[sum1_idx[0]:sum1_idx[1]].sum() + window_HC[sum2_idx[0]:sum2_idx[1]].sum())/1000 #Translated to kWh
-                winter_window_HC = window_HC[win_idx[0]:win_idx[1]].sum() /1000 #Translated to kWh
+                summer_window_HC = (window_HC[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + window_HC[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
+                winter_window_HC = window_HC[:,win_idx[0]:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
             
-                summer_window_Phi = (Phi_aperture[sum1_idx[0]:sum1_idx[1]].sum() + Phi_aperture[sum2_idx[0]:sum2_idx[1]].sum())/1000 #Translated to kWh
-                winter_window_Phi = Phi_aperture[win_idx[0]:win_idx[1]].sum() /1000 #Translated to kWh
-
-            count += 1
-
+                summer_window_Phi = (Phi_aperture[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + Phi_aperture[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
+                winter_window_Phi = Phi_aperture[:,win_idx[0]:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
 
             #Saving heating load
             with open(output_folder.joinpath(f"{aperture_name}__summer_HC.pkl"), 'wb') as outfile:
@@ -127,9 +127,9 @@ def run_ISO13790(info):
                        A__f, A__t, A__m, C__m,
                        setpoint_cooling, setpoint_heating])
 
-        end_idx += room["aperture_count"]
+        end_idx += room["room_aperture_mesh_face_count"]
         Phi__sol = Phi_sol_2d_W[start_idx:end_idx,:].sum(axis=0)
-        start_idx += room["aperture_count"]
+        start_idx += room["room_aperture_mesh_face_count"]
 
         Phi__int = Phi__int_Wm2*A__f
 

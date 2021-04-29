@@ -3,7 +3,7 @@ import numpy as np
 import cupy as cp
 from io_module import read_text_matrix, timer
 import pickle
-
+from itertools import chain
 
 
 def raytracing_postprocessing(info):
@@ -17,7 +17,7 @@ def raytracing_postprocessing(info):
 
 
 
-def energy(info, reader, matmul):
+def energy(info):
 
     if info["raytracing_output"] == "text":
         #Reading dc matrix
@@ -30,7 +30,7 @@ def energy(info, reader, matmul):
         energy_sky_matrix = info["energy_sky_matrix"]
 
 
-    if info["matmul_hardware"] == "CPU":
+    if info["matmul_hardware"] == "cpu":
         #CPU (BLAS) matmul
         Phi_sol_2d_Wm2 = timer(np.matmul, energy_dc_matrix, energy_sky_matrix)
 
@@ -40,7 +40,9 @@ def energy(info, reader, matmul):
 
     aperture_areas = []
     for room in info["room_info"]:
-        aperture_areas.extend(room["aperture_areas_list"])
+        #print(room["aperture_identifiers_list"])
+        #print(list(chain.from_iterable(room["aperture_areas_list"])))
+        aperture_areas.extend(list(chain.from_iterable(room["aperture_areas_list"])))
     aperture_areas = np.array(aperture_areas)
 
     for i in range(8760):
@@ -49,7 +51,7 @@ def energy(info, reader, matmul):
     info["Phi_sol_2d_W"] = Phi_sol_2d_W
 
 
-def daylight(info, reader, matmul):
+def daylight(info):
 
     if info["raytracing_output"] == "text":
         #Reading dc matrix
@@ -63,21 +65,21 @@ def daylight(info, reader, matmul):
 
     if info["matmul_hardware"] == "cpu":
         #CPU (BLAS) matmul
-        result_matrix = timer(np.matmul, dc_matrix, sky_matrix)
+        result_matrix = timer(np.matmul, daylight_dc_matrix, daylight_sky_matrix)
 
         calc_da_cpu(info, result_matrix)
 
     elif info["matmul_hardware"] == "gpu":
         #Copy to host from device (from CPU to GPU)
         start = time.time()
-        dc_matrix_gpu = cp.asarray(dc_matrix)
-        sky_matrix_gpu = cp.asarray(sky_matrix)
+        daylight_dc_matrix_gpu = cp.asarray(daylight_dc_matrix)
+        daylight_sky_matrix_gpu = cp.asarray(daylight_sky_matrix)
         end = time.time()
         print(f"+++++ CPU to GPU copy: {(end-start)} [s] +++++")
 
         #GPU (cuBLAS) matmul
         start = time.time()
-        result_matrix_gpu = cp.matmul(dc_matrix_gpu,sky_matrix_gpu)
+        result_matrix_gpu = cp.matmul(daylight_dc_matrix_gpu, daylight_sky_matrix_gpu)
         end = time.time()
         print(f"+++++ GPU matmul: {(end-start)} [s] +++++")
 
@@ -87,7 +89,7 @@ def daylight(info, reader, matmul):
         end = time.time()
         print(f"+++++ GPU to CPU copy: {(end-start)} [s] +++++")
     
-    print(f"Problem memory size in kbytes: {(dc_matrix.nbytes + sky_matrix.nbytes + result_matrix.nbytes)/1000}")
+    #print(f"Problem memory size in kbytes: {(daylight_dc_matrix.nbytes + daylight_sky_matrix.nbytes + result_matrix.nbytes)/1000}")
 
     
 def calc_da_cpu(info, result_matrix):
