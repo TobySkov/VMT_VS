@@ -99,7 +99,7 @@ def calc_da_cpu(info, result_matrix):
 
     #Calculate DA on all
     data = result_matrix[:,sch_idx]
-    above_300 = (data*179) > 300 #179 lm/W; above 300 lux
+    above_300 = (data*179) >= 300 #179 lm/W; above 300 lux
     da = (((above_300).sum(axis=1))/above_300.shape[1])*100
 
     start_idx = 0

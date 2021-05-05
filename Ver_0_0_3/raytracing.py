@@ -164,12 +164,17 @@ def find_rad_files(info, type):
 
     model_folder = info["sim_folder"].joinpath(f"Raytracing\\{type}\\Radiance\\model")
 
-    scene = [str(model_folder.joinpath("scene\\envelope.mat")),
-             str(model_folder.joinpath("scene\\shades.mat")),
-             str(model_folder.joinpath("aperture\\aperture.mat")),
-             str(model_folder.joinpath("scene\\envelope.rad")),
-             str(model_folder.joinpath("scene\\shades.rad")),
-             str(model_folder.joinpath("aperture\\aperture.rad"))]
+    scene_ini = [model_folder.joinpath("scene\\envelope.mat"),
+                model_folder.joinpath("scene\\shades.mat"),
+                model_folder.joinpath("aperture\\aperture.mat"),
+                model_folder.joinpath("scene\\envelope.rad"),
+                model_folder.joinpath("scene\\shades.rad"),
+                model_folder.joinpath("aperture\\aperture.rad")]
+
+    scene = []
+    for path in scene_ini:
+        if os.path.isfile(path):
+            scene.append(str(path))
 
     return scene
 
@@ -212,6 +217,9 @@ def rtrace_parameters(resolution):
 
     elif resolution == 2:
         rtrace_cmd = ["-ab", "7", "-ad", "25000", "-lw", f"{1/(25000)}"]
+
+    elif resolution == 3:
+        rtrace_cmd = ["-ab", "10", "-ad", "100000", "-lw", f"{1/(100000)}"]
 
     return rtrace_cmd
 
