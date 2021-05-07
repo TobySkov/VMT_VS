@@ -28,9 +28,9 @@ inline void compute(const double& A__m, const double& A__t, const double& H__tr_
 
     //ISO 13790
     //Equations: (C.6), (C.7), (C.8)
-    double H__tr_1 = 1 / (1 / (H__ve)+1 / (H__tr_is));
+    double H__tr_1 = 1 / ((1 / H__ve) + (1 / H__tr_is));
     double H__tr_2 = H__tr_1 + H__tr_w;
-    double H__tr_3 = 1 / (1 / (H__tr_2)+1 / (H__tr_ms));
+    double H__tr_3 = 1 / ((1 / H__tr_2) + (1 / H__tr_ms));
 
     //ISO 13790
     //Equations: (C.4), (C.5)

@@ -80,8 +80,6 @@ def window_output(info):
 
 def run_ISO13790(info):
 
-    
-
     occ_sch = gen_occ_sch()
 
     theta__e = np.array(info["theta__e"])
@@ -90,9 +88,9 @@ def run_ISO13790(info):
     H__ve_infil_1_m2 = np.ones((8760))*(1200*0.0001)    #Per exposed area, (0.0001 m3/(s.m2))
     H__ve_venti_1_m2 = occ_sch*(1200*0.0012)            #Per floor area, (q__tot = 1.2 l/(s.m2) = 0.0012 m3/(s.m2))
     
-    setpoint_cooling = 20.0
-    setpoint_heating = 26.0
-
+    setpoint_heating = 20.0
+    setpoint_cooling = 26.0
+    
     Phi__int_people_Wm2 = 108*(1/15) #108 W/person, 15 m2/person
     Phi__int_equip_Wm2 = 5 #5 W/m2 equipment
     Phi__int_light_Wm2 = 5 #5 W/m2 Lighting - Should prob be turned of when DA reaches certain level.
@@ -143,20 +141,28 @@ def run_ISO13790(info):
         Phi__HC_nd = result[(2*8760):(3*8760)]
 
         ###Saving results
-        Phi__H_nd = Phi__HC_nd[Phi__HC_nd > 0].sum()/(1000*A__f) #Conversion from Wh to kWh/(m2)
-        Phi__C_nd = Phi__HC_nd[Phi__HC_nd < 0].sum()/(1000*A__f) #Conversion from Wh to kWh/(m2)
+        Phi__H_nd = np.zeros((8760))
+        Phi__C_nd = np.zeros((8760))
+
+        Phi__H_nd[Phi__HC_nd > 0] = Phi__HC_nd[Phi__HC_nd > 0]/(1000) #Conversion from Wh to kWh
+        Phi__C_nd[Phi__HC_nd < 0] = -Phi__HC_nd[Phi__HC_nd < 0]/(1000) #Conversion from Wh to kWh
+        Phi__HC_nd = Phi__HC_nd/(1000)                      #Conversion from Wh to kWh
         theta__op = 0.3*theta__air + 0.7*theta__s
 
         room["theta__s"] = theta__s
 
         output_folder = info["sim_folder"].joinpath("output\\ISO13790")
 
+        #Saving hourly heating and cooling load
+        with open(output_folder.joinpath(f"{name}__hc_load_hourly.pkl"), 'wb') as outfile:
+            pickle.dump(Phi__HC_nd.tolist(), outfile, protocol = 2)
+
         #Saving heating load
-        with open(output_folder.joinpath(f"{name}__h_load.pkl"), 'wb') as outfile:
+        with open(output_folder.joinpath(f"{name}__h_load_hourly.pkl"), 'wb') as outfile:
             pickle.dump(Phi__H_nd.tolist(), outfile, protocol = 2)
 
         #Saving cooling load
-        with open(output_folder.joinpath(f"{name}__c_load.pkl"), 'wb') as outfile:
+        with open(output_folder.joinpath(f"{name}__c_load_hourly.pkl"), 'wb') as outfile:
             pickle.dump(Phi__C_nd.tolist(), outfile, protocol = 2)
 
         #Saving theta__air
