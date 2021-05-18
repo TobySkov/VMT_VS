@@ -1,0 +1,14 @@
+void plastic Wall_rad_mat
+0
+0
+5 0.5 0.5 0.5 0.0 0.0
+
+void plastic Ceiling_rad_mat
+0
+0
+5 0.8 0.8 0.8 0.0 0.0
+
+void plastic Floor_rad_mat
+0
+0
+5 0.2 0.2 0.2 0.0 0.0
