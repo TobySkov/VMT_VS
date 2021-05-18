@@ -8,7 +8,9 @@ https://unmethours.com/question/40179/radiance-convergence-simulation-parameters
 """
 import os
 from subprocess import Popen, PIPE
+import time
 
+base = os.path.dirname(__file__)
 
 #Setting enviromental variable PATH
 os.environ["PATH"] = "C:\\Accelerad\\bin;" + \
@@ -21,36 +23,18 @@ os.environ["RAYPATH"] = ".;" + \
     "C:\\Radiance\\lib"
 
 
+#%%
 ab_list = [6, 8, 10, 12] # 4 different
 ad_list = [1024, 4096, 16384, 65536, 262142] # 5 different
 lw_power_list = [1, 1.5, 2, 2.5, 3] # 5 different
 #4*5*5 = 100 options
 
-no_sensor_points = 1
-rfluxsky_file = r""
-context_rad = r""
-grids_files_list = []
 
-
-for i in range(len(ab_list)):
-    for j in range(len(ad_list)):
-        for k in range(len(lw_power_list)):
-            ab = ab_list[i]
-            ad = ad_list[j]
-            lw = 1/(ad**lw_power_list[k])
-            
-            
-            cmd_list = ["C:\\Accelerad\\bin\\accelerad_rfluxmtx.exe",
-                        "-y", f"{no_sensor_points}",
-                        "-I", "-",
-                        f"{rfluxsky_file}",
-                        f"{context_rad}"]
-            
-            #Run 1
-            output_filename = f"run1__ab_{ab}__ad_{ad}__"
-            
-            
-            #Run 2
+#%%
+no_sensor_points = 4096
+rfluxsky_file = "rfluxsky.rad"
+geo_oct = "convergence_geo.oct"
+grids_files_list = [base + "\\Triangles_3500__Points_4096\\Radiance\\model\\grid\\SensorGrid_75e894a0.pts"]
 
 #%%
 
@@ -81,3 +65,43 @@ def read_stdin(input_files_list):
     bytes_input = string.encode()
     
     return bytes_input
+
+#%%
+for i in range(len(ab_list)):
+    for j in range(len(ad_list)):
+        for k in range(len(lw_power_list)):
+            ab = ab_list[i]
+            ad = ad_list[j]
+            lw = 1/(ad**lw_power_list[k])
+            
+            
+            cmd_list = ["C:\\Accelerad\\bin\\accelerad_rfluxmtx.exe",
+                        "-y", f"{no_sensor_points}",
+                        "-ab", f"{ab}",
+                        "-ad", f"{ad}",
+                        "-lw", f"{lw}",
+                        "-I", "-",
+                        f"{rfluxsky_file}",
+                        "-i", f"{geo_oct}"]
+            
+            #Run 1
+            start = time.time()
+            output_filename = f"output\\run1__ab_{ab}__ad_{ad}__lwpower_{lw_power_list[k]}__run1.txt"
+            run_rfluxmtx(cmd_list, grids_files_list, output_filename)
+            end = time.time()
+            run_1_duration = end-start
+            
+            #Run 2
+            start = time.time()
+            output_filename = f"output\\run1__ab_{ab}__ad_{ad}__lwpower_{lw_power_list[k]}__run2.txt"
+            run_rfluxmtx(cmd_list, grids_files_list, output_filename)
+            end = time.time()
+            run_2_duration = end-start
+
+            #Write timings
+            with open(f"output\\run1__ab_{ab}__ad_{ad}__lwpower_{lw_power_list[k]}__timings.txt", "w") as outfile:
+                outfile.write(f"Wall time, run1: {run_1_duration} [s]\n")
+                outfile.write(f"Wall time, run2: {run_2_duration} [s]\n")
+
+
+
