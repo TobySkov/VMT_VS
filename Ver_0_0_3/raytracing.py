@@ -14,8 +14,11 @@ def raytracing(info):
     #Run daylight raytracing command
     timer(run_rfluxmtx, info, info["raytracing_resolution"], "daylight")
 
-    #Run energy raytracing command
-    timer(run_rfluxmtx, info, info["raytracing_resolution"], "energy")
+    #Run energy inside raytracing command
+    timer(run_rfluxmtx, info, info["raytracing_resolution"], "energy_inside")
+
+    #Run energy inside raytracing command
+    timer(run_rfluxmtx, info, info["raytracing_resolution"], "energy_outside")
 
 
 

@@ -24,11 +24,16 @@ os.environ["RAYPATH"] = ".;" + \
 
 
 #%%
-ab_list = [6, 8, 10, 12] # 4 different
-ad_list = [1024, 4096, 16384, 65536, 262142] # 5 different
-lw_power_list = [1, 1.5, 2, 2.5, 3] # 5 different
+#ab_list = [6, 8, 10, 12] # 4 different
+#ad_list = [1024, 4096, 16384, 65536, 262142] # 5 different
+#lw_power_list = [1, 1.5, 2, 2.5, 3] # 5 different
 #4*5*5 = 100 options
 
+#Missing simulations
+ab_list = [12] # 4 different
+ad_list = [262142] # 5 different
+lw_power_list = [2, 2.5, 3] # 5 different
+#4*5*5 = 100 options
 
 #%%
 no_sensor_points = 4096

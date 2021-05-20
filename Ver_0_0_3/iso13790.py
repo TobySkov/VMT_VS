@@ -44,37 +44,46 @@ def window_output(info):
             
             end_idx += len(aperture_mesh_areas)
             Phi_aperture = info["Phi_sol_2d_W"][start_idx:end_idx,:]
+            Phi_aperture_outside = info["Phi_sol_2d_W_outside"][start_idx:end_idx,:]
             start_idx += len(aperture_mesh_areas)
 
-            if info["hemisphere"] == "northern":
-                summer_window_HC = window_HC[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
-                winter_window_HC = (window_HC[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + window_HC[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
 
-                summer_window_Phi = Phi_aperture[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
-                winter_window_Phi = (Phi_aperture[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + Phi_aperture[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
+            with open(output_folder.joinpath(f"{aperture_name}__Phi_aperture.pkl"), 'wb') as outfile:
+                pickle.dump((Phi_aperture/1000).tolist(), outfile, protocol = 2) 
 
-            elif info["hemisphere"] == "southern":
-                summer_window_HC = (window_HC[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + window_HC[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
-                winter_window_HC = window_HC[:,win_idx[0]:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
+            with open(output_folder.joinpath(f"{aperture_name}__Phi_aperture_outside.pkl"), 'wb') as outfile:
+                pickle.dump(np.divide(Phi_aperture_outside,aperture_mesh_areas).tolist(), outfile, protocol = 2) 
+                 
+            ### Computing summer and winter heat gain and loss and solar heat gain and loss
+            #if info["hemisphere"] == "northern":
+            #    summer_window_HC = window_HC[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
+            #    winter_window_HC = (window_HC[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + window_HC[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
+
+            #    summer_window_Phi = Phi_aperture[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
+            #    winter_window_Phi = (Phi_aperture[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + Phi_aperture[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
+
+            #elif info["hemisphere"] == "southern":
+            #    summer_window_HC = (window_HC[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + window_HC[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
+            #    winter_window_HC = window_HC[:,win_idx[0]:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
             
-                summer_window_Phi = (Phi_aperture[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + Phi_aperture[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
-                winter_window_Phi = Phi_aperture[:,win_idx[0]:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
+            #    summer_window_Phi = (Phi_aperture[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + Phi_aperture[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
+            #    winter_window_Phi = Phi_aperture[:,win_idx[0]1:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
 
             #Saving heating load
-            with open(output_folder.joinpath(f"{aperture_name}__summer_HC.pkl"), 'wb') as outfile:
-                pickle.dump(summer_window_HC.tolist(), outfile, protocol = 2)
+            #with open(output_folder.joinpath(f"{aperture_name}__summer_HC.pkl"), 'wb') as outfile:
+            #    pickle.dump(summer_window_HC.tolist(), outfile, protocol = 2)
 
             #Saving cooling load
-            with open(output_folder.joinpath(f"{aperture_name}__winter_HC.pkl"), 'wb') as outfile:
-                pickle.dump(winter_window_HC.tolist(), outfile, protocol = 2)
+            #with open(output_folder.joinpath(f"{aperture_name}__winter_HC.pkl"), 'wb') as outfile:
+            #    pickle.dump(winter_window_HC.tolist(), outfile, protocol = 2)
 
             #Saving theta__air
-            with open(output_folder.joinpath(f"{aperture_name}__summer_Phi.pkl"), 'wb') as outfile:
-                pickle.dump(summer_window_Phi.tolist(), outfile, protocol = 2)
+            #with open(output_folder.joinpath(f"{aperture_name}__summer_Phi.pkl"), 'wb') as outfile:
+            #    pickle.dump(summer_window_Phi.tolist(), outfile, protocol = 2)
 
             #Saving theta__op
-            with open(output_folder.joinpath(f"{aperture_name}__winter_Phi.pkl"), 'wb') as outfile:
-                pickle.dump(winter_window_Phi.tolist(), outfile, protocol = 2)
+            #with open(output_folder.joinpath(f"{aperture_name}__winter_Phi.pkl"), 'wb') as outfile:
+            #    pickle.dump(winter_window_Phi.tolist(), outfile, protocol = 2)
 
 
 
@@ -144,9 +153,10 @@ def run_ISO13790(info):
         Phi__H_nd = np.zeros((8760))
         Phi__C_nd = np.zeros((8760))
 
-        Phi__H_nd[Phi__HC_nd > 0] = Phi__HC_nd[Phi__HC_nd > 0]/(1000) #Conversion from Wh to kWh
-        Phi__C_nd[Phi__HC_nd < 0] = -Phi__HC_nd[Phi__HC_nd < 0]/(1000) #Conversion from Wh to kWh
-        Phi__HC_nd = Phi__HC_nd/(1000)                      #Conversion from Wh to kWh
+        Phi__H_nd[Phi__HC_nd > 0] = Phi__HC_nd[Phi__HC_nd > 0]/(1000)   #Conversion from Wh to kWh
+        Phi__C_nd[Phi__HC_nd < 0] = -Phi__HC_nd[Phi__HC_nd < 0]/(1000)  #Conversion from Wh to kWh
+        Phi__HC_nd = Phi__HC_nd/(1000)                                  #Conversion from Wh to kWh
+        Phi__sol = Phi__sol/1000                                        #Conversion from Wh to kWh
         theta__op = 0.3*theta__air + 0.7*theta__s
 
         room["theta__s"] = theta__s
@@ -172,6 +182,10 @@ def run_ISO13790(info):
         #Saving theta__op
         with open(output_folder.joinpath(f"{name}__theta__op.pkl"), 'wb') as outfile:
             pickle.dump(theta__op.tolist(), outfile, protocol = 2)
+
+        #Saving Phi_sol
+        with open(output_folder.joinpath(f"{name}__Phi__sol.pkl"), 'wb') as outfile:
+            pickle.dump(Phi__sol.tolist(), outfile, protocol = 2)
 
 
 

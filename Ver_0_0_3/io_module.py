@@ -81,7 +81,7 @@ def find_grid_files(info, type):
             a = room["name"].split("_")
             grid_files.append(grid_folder.joinpath(f"{a[0]}_{a[1]}.pts"))
 
-    elif type == "Energy":
+    elif "Energy" in type:
         for room in info["room_info"]:
             for aperture in room["aperture_identifiers_list"]:
                 a = grid_folder.joinpath(aperture + "_SensorGrid.pts")
@@ -121,10 +121,13 @@ def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
             "epw_file": Path(info_ini["epw_file"]),
             "rfluxsky": dst,
             "no_daylight_sensorpoints": int(info_ini["no_daylight_sensorpoints"]),
-            "no_energy_sensorpoints": int(info_ini["no_energy_sensorpoints"])}
+            "no_energy_inside_sensorpoints": int(info_ini["no_energy_inside_sensorpoints"]),
+            "no_energy_outside_sensorpoints": int(info_ini["no_energy_outside_sensorpoints"])}
 
     info["daylight_dc_matrix"] = info["sim_folder"].joinpath(f"output\\daylight_dc.txt")
-    info["energy_dc_matrix"] = info["sim_folder"].joinpath(f"output\\energy_dc.txt")
+    info["energy_inside_dc_matrix"] = info["sim_folder"].joinpath(f"output\\energy_inside_dc.txt")
+    info["energy_outside_dc_matrix"] = info["sim_folder"].joinpath(f"output\\energy_outside_dc.txt")
+
     if not os.path.exists(info["daylight_dc_matrix"].parent):
         os.makedirs(info[f"daylight_dc_matrix"].parent)
 
@@ -146,7 +149,8 @@ def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
         info["theta__e"] = pickle.load(pkl_file)
 
     find_grid_files(info, type = "Daylight")
-    find_grid_files(info, type = "Energy")
+    find_grid_files(info, type = "Energy_inside")
+    find_grid_files(info, type = "Energy_outside")
 
     read_latitude(info)
 

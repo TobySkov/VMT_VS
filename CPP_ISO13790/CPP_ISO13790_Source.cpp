@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <stdlib.h>
 
 using namespace std;
 namespace py = pybind11;
@@ -85,6 +86,9 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
     vector<double> vec_theta__air(8760);
     vector<double> vec_Phi__HC_nd(8760);
 
+    vector<double> vec_theta__m_t_old = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    vector<double> vec_theta__m_t_new = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
     //Unpack params
     double H__tr_em = ptr_params[0];
     double H__tr_is = ptr_params[1];
@@ -113,7 +117,78 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
     double theta__m_t, theta__s, theta__air;
 
     double theta__air_set;
+    
+    bool warmup = true;
+    double cum_diff;
+    int warmup_day = 0;
 
+
+    //Warmup
+    while (warmup) {
+        for (int i = 0; i < 24; i++) {//Run first 24 hours of year again and again
+
+            Phi__sol = ptr_Phi__sol[i];
+            Phi__int = ptr_Phi__int[i];
+            theta__e = ptr_theta__e[i];
+            theta__sup = ptr_theta__e[i];
+            H__ve = ptr_H__ve[i];
+
+            compute(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
+                Phi__HC_nd_0, theta__m_t_0, theta__s_0, theta__air_0);
+
+            if (setpoint_heating <= theta__air_0 && theta__air_0 <= setpoint_cooling) { //Free floating conditions
+
+                theta__m_tm1 = theta__m_t_0;
+                vec_theta__m_t_new[i] = theta__m_t_0;
+
+                vec_theta__s[i] = theta__s_0;
+                vec_theta__air[i] = theta__air_0;
+                vec_Phi__HC_nd[i] = Phi__HC_nd_0;
+
+            }
+            else {
+
+                compute(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
+                    Phi__HC_nd_10, theta__m_t_10, theta__s_10, theta__air_10);
+
+                //Establishing what target to reach for/interpolate to
+                if (theta__air_0 < setpoint_heating) {
+                    theta__air_set = setpoint_heating;
+                }
+                else if (setpoint_cooling < theta__air_0) {
+                    theta__air_set = setpoint_cooling;
+                }
+
+                Phi__HC_nd = Phi__HC_nd_10 * ((theta__air_set - theta__air_0) / (theta__air_10 - theta__air_0));
+
+                compute(A__m, A__t, H__tr_w, H__tr_is, H__tr_ms, H__tr_em, C__m, Phi__sol, Phi__int, H__ve, theta__e, theta__sup, theta__m_tm1,
+                    Phi__HC_nd, theta__m_t, theta__s, theta__air);
+
+                theta__m_tm1 = theta__m_t;
+                vec_theta__m_t_new[i] = theta__m_t;
+
+                vec_theta__s[i] = theta__s;
+                vec_theta__air[i] = theta__air;
+                vec_Phi__HC_nd[i] = Phi__HC_nd;
+
+            }
+        }
+        //Evaluate warmup day
+        cum_diff = 0;
+        for (int i = 0; i < 24; i++) {
+            cum_diff += abs(vec_theta__m_t_new[i] - vec_theta__m_t_old[i]);
+        }
+        if (cum_diff < 0.5) {
+            warmup = false;
+        }
+        warmup_day += 1;
+        cout << "Warmup day: " << warmup_day << "  Cummulative difference: " << cum_diff << "\n";
+        vec_theta__m_t_old = vec_theta__m_t_new;
+    }
+
+
+
+    //Annual simulation
     for (int i = 0; i < 8760; i++) {
 
         Phi__sol = ptr_Phi__sol[i];
@@ -204,61 +279,5 @@ PYBIND11_MODULE(CPP_ISO13790, m) {
 #endif
 }
 
-
-
-
-//const double e = 2.7182818284590452353602874713527;
-//
-//double sinh_impl(double x) {
-//    return (1 - pow(e, (-2 * x))) / (2 * pow(e, -x));
-//}
-//
-//double cosh_impl(double x) {
-//    return (1 + pow(e, (-2 * x))) / (2 * pow(e, -x));
-//}
-//
-//double tanh_impl(double x) {
-//    return sinh_impl(x) / cosh_impl(x);
-//}
-//
-//namespace py = pybind11;
-//
-//py::array_t<double> add_arrays(py::array_t<double> input1, py::array_t<double> input2) {
-//    py::buffer_info buf1 = input1.request();
-//    py::buffer_info buf2 = input2.request();
-//
-//    if (buf1.ndim != 1 || buf2.ndim != 1)
-//        throw std::runtime_error("Number of dimensions must be one");
-//
-//    if (buf1.size != buf2.size)
-//        throw std::runtime_error("Input shapes must match");
-//
-//    /* No pointer is passed, so NumPy will allocate the buffer */
-//    auto result = py::array_t<double>(buf1.size);
-//
-//    py::buffer_info buf3 = result.request();
-//
-//    double* ptr1 = (double*)buf1.ptr,
-//        * ptr2 = (double*)buf2.ptr,
-//        * ptr3 = (double*)buf3.ptr;
-//
-//    for (size_t idx = 0; idx < buf1.shape[0]; idx++)
-//        ptr3[idx] = ptr1[idx] + ptr2[idx];
-//
-//    return result;
-//}
-//
-//PYBIND11_MODULE(ISO13790, m) {
-//    m.def("fast_tanh", &tanh_impl, R"pbdoc(
-//        Compute a hyperbolic tangent of a single argument expressed in radians.
-//    )pbdoc");
-//    m.def("add_arrays", &add_arrays, "Add two NumPy arrays");
-//
-//#ifdef VERSION_INFO
-//    m.attr("__version__") = VERSION_INFO;
-//#else
-//    m.attr("__version__") = "dev";
-//#endif
-//}
 
 

@@ -27,7 +27,7 @@ def main():
 
     info["raytracing_output"] = "binary" #Options: "binary"/"text"
     info["matmul_hardware"] = "cpu" #Options: "cpu"/"gpu"
-    info["raytracing_resolution"] = 3 #Options 0/1/2
+    info["raytracing_resolution"] = 2 #Options 0/1/2
 
     #Running raytracing
     raytracing(info)

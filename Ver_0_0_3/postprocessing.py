@@ -14,19 +14,20 @@ def raytracing_postprocessing(info):
     #Energy matmul 
     energy(info)
 
+    #Energy matmul 
+    energy_outside(info)
 
 
-
-def energy(info):
+def energy_outside(info):
 
     if info["raytracing_output"] == "text":
         #Reading dc matrix
-        energy_dc_matrix = timer(read_text_matrix, info["energy_dc_matrix"])
+        energy_dc_matrix = timer(read_text_matrix, info["energy_outside_dc_matrix"])
         #Reading sky matrix
         energy_sky_matrix = timer(read_text_matrix, info["energy_sky_matrix"])
 
     elif info["raytracing_output"] == "binary":
-        energy_dc_matrix = info["energy_dc_matrix"]
+        energy_dc_matrix = info["energy_outside_dc_matrix"]
         energy_sky_matrix = info["energy_sky_matrix"]
 
 
@@ -36,7 +37,44 @@ def energy(info):
 
 
     #Multiplying with relevant window areas
-    Phi_sol_2d_W = np.zeros((info["no_energy_sensorpoints"], 8760))
+    Phi_sol_2d_W = np.zeros((info["no_energy_outside_sensorpoints"], 8760))
+
+    aperture_areas = []
+    for room in info["room_info"]:
+        aperture_areas.extend(list(chain.from_iterable(room["aperture_areas_list"])))
+    aperture_areas = np.array(aperture_areas)
+
+    for i in range(8760):
+        Phi_sol_2d_W[:,i] = np.multiply(Phi_sol_2d_Wm2[:,i],aperture_areas)
+
+    info["Phi_sol_2d_W_outside"] = Phi_sol_2d_W
+
+
+        
+
+
+
+
+def energy(info):
+
+    if info["raytracing_output"] == "text":
+        #Reading dc matrix
+        energy_dc_matrix = timer(read_text_matrix, info["energy_inside_dc_matrix"])
+        #Reading sky matrix
+        energy_sky_matrix = timer(read_text_matrix, info["energy_sky_matrix"])
+
+    elif info["raytracing_output"] == "binary":
+        energy_dc_matrix = info["energy_inside_dc_matrix"]
+        energy_sky_matrix = info["energy_sky_matrix"]
+
+
+    if info["matmul_hardware"] == "cpu":
+        #CPU (BLAS) matmul
+        Phi_sol_2d_Wm2 = timer(np.matmul, energy_dc_matrix, energy_sky_matrix)
+
+
+    #Multiplying with relevant window areas
+    Phi_sol_2d_W = np.zeros((info["no_energy_inside_sensorpoints"], 8760))
 
     aperture_areas = []
     for room in info["room_info"]:
