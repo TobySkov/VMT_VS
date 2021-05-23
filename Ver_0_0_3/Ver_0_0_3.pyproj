@@ -13,7 +13,7 @@
     <RootNamespace>Ver_0_0_3</RootNamespace>
     <InterpreterId>Global|PythonCore|3.7</InterpreterId>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>"C:\Simulation3" "c:\radiance" "c:\accelerad"</CommandLineArguments>
+    <CommandLineArguments>"C:\iso13790_case1" "c:\radiance" "c:\accelerad"</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

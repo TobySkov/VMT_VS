@@ -46,8 +46,9 @@ def energy_outside(info):
 
     for i in range(8760):
         Phi_sol_2d_W[:,i] = np.multiply(Phi_sol_2d_Wm2[:,i],aperture_areas)
-
+    
     info["Phi_sol_2d_W_outside"] = Phi_sol_2d_W
+    info["Phi_sol_2d_Wm2_outside"] = Phi_sol_2d_Wm2
 
 
         
@@ -87,6 +88,7 @@ def energy(info):
         Phi_sol_2d_W[:,i] = np.multiply(Phi_sol_2d_Wm2[:,i],aperture_areas)
         
     info["Phi_sol_2d_W"] = Phi_sol_2d_W
+    info["Phi_sol_2d_Wm2"] = Phi_sol_2d_Wm2
 
 
 def daylight(info):

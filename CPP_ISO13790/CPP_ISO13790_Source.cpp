@@ -82,6 +82,7 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
         * ptr_params = (double*)buf_params.ptr;
 
     //Allocate output
+    vector<double> vec_theta__m(8760);
     vector<double> vec_theta__s(8760);
     vector<double> vec_theta__air(8760);
     vector<double> vec_Phi__HC_nd(8760);
@@ -141,10 +142,6 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
                 theta__m_tm1 = theta__m_t_0;
                 vec_theta__m_t_new[i] = theta__m_t_0;
 
-                vec_theta__s[i] = theta__s_0;
-                vec_theta__air[i] = theta__air_0;
-                vec_Phi__HC_nd[i] = Phi__HC_nd_0;
-
             }
             else {
 
@@ -166,10 +163,6 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
 
                 theta__m_tm1 = theta__m_t;
                 vec_theta__m_t_new[i] = theta__m_t;
-
-                vec_theta__s[i] = theta__s;
-                vec_theta__air[i] = theta__air;
-                vec_Phi__HC_nd[i] = Phi__HC_nd;
 
             }
         }
@@ -204,6 +197,7 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
 
             theta__m_tm1 = theta__m_t_0;
 
+            vec_theta__m[i] = theta__m_t_0;
             vec_theta__s[i] = theta__s_0;
             vec_theta__air[i] = theta__air_0;
             vec_Phi__HC_nd[i] = Phi__HC_nd_0;
@@ -229,6 +223,7 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
 
             theta__m_tm1 = theta__m_t;
 
+            vec_theta__m[i] = theta__m_t;
             vec_theta__s[i] = theta__s;
             vec_theta__air[i] = theta__air;
             vec_Phi__HC_nd[i] = Phi__HC_nd;
@@ -238,12 +233,18 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
 
 
 
-    //Converting 3 output vectors into 1
-    auto np_result = py::array_t<double>(8760 * 3);
+    //Converting 4 output vectors into 1
+    auto np_result = py::array_t<double>(8760 * 4);
     py::buffer_info buf_result = np_result.request();
     double* ptr_result = (double*)buf_result.ptr;
     size_t idx = 0;
     int i;
+    for (i = 0; i < 8760; i++)
+    {
+        ptr_result[idx] = vec_theta__m[i];
+        idx += 1;
+    }
+
     for (i = 0; i < 8760; i++)
     {
         ptr_result[idx] = vec_theta__s[i];

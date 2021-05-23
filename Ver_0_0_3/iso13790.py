@@ -8,7 +8,7 @@ def ISO13790(info):
 
     run_ISO13790(info)
 
-    window_output(info)
+    #window_output(info)
 
 
 
@@ -32,7 +32,7 @@ def window_output(info):
     start_idx = 0
     end_idx = 0
     for i, room in enumerate(info["room_info"]):
-        theta__s = room["theta__s"]
+        #theta__s = room["theta__s"]
         U__window = room["U__window"]
 
         for j, aperture_name in enumerate(room["aperture_identifiers_list"]):
@@ -40,50 +40,20 @@ def window_output(info):
 
             #This will be positive, when heat going from outside to inside
             #   just like solar gain and HC load.
-            window_HC = np.matmul(np.reshape((U__window*aperture_mesh_areas),(len(aperture_mesh_areas),1)), np.reshape((theta__e-theta__s),(1,8760)))
+            #window_HC = np.matmul(np.reshape((U__window*aperture_mesh_areas),(len(aperture_mesh_areas),1)), np.reshape((theta__e-theta__s),(1,8760)))
             
             end_idx += len(aperture_mesh_areas)
-            Phi_aperture = info["Phi_sol_2d_W"][start_idx:end_idx,:]
-            Phi_aperture_outside = info["Phi_sol_2d_W_outside"][start_idx:end_idx,:]
+            Phi_aperture = info["Phi_sol_2d_Wm2"][start_idx:end_idx,:]
+            Phi_aperture_outside = info["Phi_sol_2d_Wm2_outside"][start_idx:end_idx,:]
             start_idx += len(aperture_mesh_areas)
 
 
             with open(output_folder.joinpath(f"{aperture_name}__Phi_aperture.pkl"), 'wb') as outfile:
-                pickle.dump((Phi_aperture/1000).tolist(), outfile, protocol = 2) 
+                pickle.dump((np.mean(Phi_aperture,axis=0)).tolist(), outfile, protocol = 2) 
 
             with open(output_folder.joinpath(f"{aperture_name}__Phi_aperture_outside.pkl"), 'wb') as outfile:
-                pickle.dump(np.divide(Phi_aperture_outside,aperture_mesh_areas).tolist(), outfile, protocol = 2) 
+                pickle.dump((np.mean(Phi_aperture_outside,axis=0)).tolist(), outfile, protocol = 2) 
                  
-            ### Computing summer and winter heat gain and loss and solar heat gain and loss
-            #if info["hemisphere"] == "northern":
-            #    summer_window_HC = window_HC[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
-            #    winter_window_HC = (window_HC[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + window_HC[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
-
-            #    summer_window_Phi = Phi_aperture[:,sum_idx[0]:sum_idx[1]].sum(axis=1)/1000 #Translated to kWh
-            #    winter_window_Phi = (Phi_aperture[:,win1_idx[0]:win1_idx[1]].sum(axis=1) + Phi_aperture[:,win2_idx[0]:win2_idx[1]].sum(axis=1))/1000 #Translated to kWh
-
-            #elif info["hemisphere"] == "southern":
-            #    summer_window_HC = (window_HC[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + window_HC[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
-            #    winter_window_HC = window_HC[:,win_idx[0]:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
-            
-            #    summer_window_Phi = (Phi_aperture[:,sum1_idx[0]:sum1_idx[1]].sum(axis=1) + Phi_aperture[:,sum2_idx[0]:sum2_idx[1]].sum(axis=1))/1000 #Translated to kWh
-            #    winter_window_Phi = Phi_aperture[:,win_idx[0]1:win_idx[1]].sum(axis=1) /1000 #Translated to kWh
-
-            #Saving heating load
-            #with open(output_folder.joinpath(f"{aperture_name}__summer_HC.pkl"), 'wb') as outfile:
-            #    pickle.dump(summer_window_HC.tolist(), outfile, protocol = 2)
-
-            #Saving cooling load
-            #with open(output_folder.joinpath(f"{aperture_name}__winter_HC.pkl"), 'wb') as outfile:
-            #    pickle.dump(winter_window_HC.tolist(), outfile, protocol = 2)
-
-            #Saving theta__air
-            #with open(output_folder.joinpath(f"{aperture_name}__summer_Phi.pkl"), 'wb') as outfile:
-            #    pickle.dump(summer_window_Phi.tolist(), outfile, protocol = 2)
-
-            #Saving theta__op
-            #with open(output_folder.joinpath(f"{aperture_name}__winter_Phi.pkl"), 'wb') as outfile:
-            #    pickle.dump(winter_window_Phi.tolist(), outfile, protocol = 2)
 
 
 
@@ -95,21 +65,22 @@ def run_ISO13790(info):
 
     # 1200 J/(m3.K)
     H__ve_infil_1_m2 = np.ones((8760))*(1200*0.0001)    #Per exposed area, (0.0001 m3/(s.m2))
-    H__ve_venti_1_m2 = occ_sch*(1200*0.0012)            #Per floor area, (q__tot = 1.2 l/(s.m2) = 0.0012 m3/(s.m2))
+    H__ve_venti_1_m2 = 0*occ_sch*(1200*0.0012)            #Per floor area, (q__tot = 1.2 l/(s.m2) = 0.0012 m3/(s.m2))
     
     setpoint_heating = 20.0
     setpoint_cooling = 26.0
     
-    Phi__int_people_Wm2 = 108*(1/15) #108 W/person, 15 m2/person
-    Phi__int_equip_Wm2 = 5 #5 W/m2 equipment
-    Phi__int_light_Wm2 = 5 #5 W/m2 Lighting - Should prob be turned of when DA reaches certain level.
+    Phi__int_people_Wm2 = 0*108*(1/15) #108 W/person, 15 m2/person
+    Phi__int_equip_Wm2 = 0*5 #5 W/m2 equipment
+    Phi__int_light_Wm2 = 0*5 #5 W/m2 Lighting 
     Phi__int_Wm2 = occ_sch*(Phi__int_people_Wm2 + Phi__int_equip_Wm2 + Phi__int_light_Wm2)
 
-    Phi_sol_2d_W = info["Phi_sol_2d_W"]
+    #Phi_sol_2d_W = info["Phi_sol_2d_W"]
 
     start_idx = 0
     end_idx = 0
 
+    theta__m = np.zeros((8760))
     theta__s = np.zeros((8760))
     theta__air = np.zeros((8760))
     Phi__HC_nd = np.zeros((8760))
@@ -134,9 +105,10 @@ def run_ISO13790(info):
                        A__f, A__t, A__m, C__m,
                        setpoint_cooling, setpoint_heating])
 
-        end_idx += room["room_aperture_mesh_face_count"]
-        Phi__sol = Phi_sol_2d_W[start_idx:end_idx,:].sum(axis=0)
-        start_idx += room["room_aperture_mesh_face_count"]
+        #end_idx += room["room_aperture_mesh_face_count"]
+        #Phi__sol = Phi_sol_2d_W[start_idx:end_idx,:].sum(axis=0)
+        #start_idx += room["room_aperture_mesh_face_count"]
+        Phi__sol = np.zeros((8760))
 
         Phi__int = Phi__int_Wm2*A__f
 
@@ -145,9 +117,10 @@ def run_ISO13790(info):
         result = run_CPP_ISO13790(theta__e, Phi__sol, Phi__int, H__ve, params)
 
         #Unpacking results
-        theta__s = result[0:8760]
-        theta__air = result[8760:(2*8760)]
-        Phi__HC_nd = result[(2*8760):(3*8760)]
+        theta__m = result[0:8760]
+        theta__s = result[8760:2*8760]
+        theta__air = result[2*8760:(3*8760)]
+        Phi__HC_nd = result[(3*8760):(4*8760)]
 
         ###Saving results
         Phi__H_nd = np.zeros((8760))
@@ -160,6 +133,23 @@ def run_ISO13790(info):
         theta__op = 0.3*theta__air + 0.7*theta__s
 
         room["theta__s"] = theta__s
+
+        #Additional outputs
+        infil_HC = (np.multiply((H__ve_infil_1_m2*room["exposed_area"]),
+                                (theta__e - theta__air)))/1000
+
+        venti_HC = (np.multiply((H__ve_venti_1_m2*room["A__f"]),
+                               (theta__e - theta__air)))/1000
+
+        windows_HC = (H__tr_w*(theta__e - theta__s))/1000
+
+        walls_HC_em = (H__tr_em*(theta__e - theta__m))/1000
+
+        walls_HC_ms = (H__tr_ms*(theta__m - theta__s))/1000
+
+        Phi__int_people = (occ_sch*Phi__int_people_Wm2*A__f)/1000
+        Phi__int_equip = (occ_sch*Phi__int_equip_Wm2*A__f)/1000
+        Phi__int_light = (occ_sch*Phi__int_light_Wm2*A__f)/1000
 
         output_folder = info["sim_folder"].joinpath("output\\ISO13790")
 
@@ -186,6 +176,31 @@ def run_ISO13790(info):
         #Saving Phi_sol
         with open(output_folder.joinpath(f"{name}__Phi__sol.pkl"), 'wb') as outfile:
             pickle.dump(Phi__sol.tolist(), outfile, protocol = 2)
+
+        #Additional output
+        with open(output_folder.joinpath(f"{name}__infil_HC.pkl"), 'wb') as outfile:
+            pickle.dump(infil_HC.tolist(), outfile, protocol = 2)
+
+        with open(output_folder.joinpath(f"{name}__venti_HC.pkl"), 'wb') as outfile:
+            pickle.dump(venti_HC.tolist(), outfile, protocol = 2)
+
+        with open(output_folder.joinpath(f"{name}__windows_HC.pkl"), 'wb') as outfile:
+            pickle.dump(windows_HC.tolist(), outfile, protocol = 2)
+
+        with open(output_folder.joinpath(f"{name}__walls_HC_em.pkl"), 'wb') as outfile:
+            pickle.dump(walls_HC_em.tolist(), outfile, protocol = 2)
+
+        with open(output_folder.joinpath(f"{name}__walls_HC_ms.pkl"), 'wb') as outfile:
+            pickle.dump(walls_HC_ms.tolist(), outfile, protocol = 2)
+
+        with open(output_folder.joinpath(f"{name}__Phi__int_people.pkl"), 'wb') as outfile:
+            pickle.dump(Phi__int_people.tolist(), outfile, protocol = 2)
+
+        with open(output_folder.joinpath(f"{name}__Phi__int_equip.pkl"), 'wb') as outfile:
+            pickle.dump(Phi__int_equip.tolist(), outfile, protocol = 2)
+
+        with open(output_folder.joinpath(f"{name}__Phi__int_light.pkl"), 'wb') as outfile:
+            pickle.dump(Phi__int_light.tolist(), outfile, protocol = 2)
 
 
 
