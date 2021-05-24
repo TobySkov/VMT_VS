@@ -1,0 +1,30 @@
+[
+  {
+    "full_id": "Room_1_e56f2daa..Face0_Glz0_SensorGrid", 
+    "name": "Room_1_e56f2daa..Face0_Glz0_SensorGrid", 
+    "identifier": "Room_1_e56f2daa..Face0_Glz0_SensorGrid", 
+    "group": "", 
+    "count": 60
+  }, 
+  {
+    "full_id": "Room_1_e56f2daa..Face1_Glz0_SensorGrid", 
+    "name": "Room_1_e56f2daa..Face1_Glz0_SensorGrid", 
+    "identifier": "Room_1_e56f2daa..Face1_Glz0_SensorGrid", 
+    "group": "", 
+    "count": 60
+  }, 
+  {
+    "full_id": "Room_1_e56f2daa..Face2_Glz0_SensorGrid", 
+    "name": "Room_1_e56f2daa..Face2_Glz0_SensorGrid", 
+    "identifier": "Room_1_e56f2daa..Face2_Glz0_SensorGrid", 
+    "group": "", 
+    "count": 60
+  }, 
+  {
+    "full_id": "Room_1_e56f2daa..Face3_Glz0_SensorGrid", 
+    "name": "Room_1_e56f2daa..Face3_Glz0_SensorGrid", 
+    "identifier": "Room_1_e56f2daa..Face3_Glz0_SensorGrid", 
+    "group": "", 
+    "count": 60
+  }
+]

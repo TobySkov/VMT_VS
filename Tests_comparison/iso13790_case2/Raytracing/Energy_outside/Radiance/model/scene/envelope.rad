@@ -1,0 +1,29 @@
+Wall_rad_mat polygon Room_1_d90d03ed..Face0
+0
+0
+12 -4.0 -4.0 0.1 4.0 -4.0 0.1 4.0 -4.0 4.1 -4.0 -4.0 4.1
+
+Wall_rad_mat polygon Room_1_d90d03ed..Face1
+0
+0
+12 4.0 -4.0 0.1 4.0 4.0 0.1 4.0 4.0 4.1 4.0 -4.0 4.1
+
+Wall_rad_mat polygon Room_1_d90d03ed..Face2
+0
+0
+12 4.0 4.0 0.1 -4.0 4.0 0.1 -4.0 4.0 4.1 4.0 4.0 4.1
+
+Wall_rad_mat polygon Room_1_d90d03ed..Face3
+0
+0
+12 -4.0 4.0 0.1 -4.0 -4.0 0.1 -4.0 -4.0 4.1 -4.0 4.0 4.1
+
+Floor_rad_mat polygon Room_1_d90d03ed..Face4
+0
+0
+12 -4.0 -4.0 0.1 -4.0 4.0 0.1 4.0 4.0 0.1 4.0 -4.0 0.1
+
+Ceiling_rad_mat polygon Room_1_d90d03ed..Face5
+0
+0
+12 -4.0 -4.0 4.1 4.0 -4.0 4.1 4.0 4.0 4.1 -4.0 4.0 4.1

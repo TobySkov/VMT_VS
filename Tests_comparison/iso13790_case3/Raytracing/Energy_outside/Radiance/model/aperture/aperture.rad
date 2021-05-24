@@ -1,0 +1,19 @@
+Glass_rad_mat_energy polygon Room_1_e56f2daa..Face0_Glz0
+0
+0
+12 -3.92 -4.0 1.1 3.92 -4.0 1.1 3.92 -4.0 3.54897959184 -3.92 -4.0 3.54897959184
+
+Glass_rad_mat_energy polygon Room_1_e56f2daa..Face1_Glz0
+0
+0
+12 4.0 -3.92 1.1 4.0 3.92 1.1 4.0 3.92 3.54897959184 4.0 -3.92 3.54897959184
+
+Glass_rad_mat_energy polygon Room_1_e56f2daa..Face2_Glz0
+0
+0
+12 3.92 4.0 1.1 -3.92 4.0 1.1 -3.92 4.0 3.54897959184 3.92 4.0 3.54897959184
+
+Glass_rad_mat_energy polygon Room_1_e56f2daa..Face3_Glz0
+0
+0
+12 -4.0 3.92 1.1 -4.0 -3.92 1.1 -4.0 -3.92 3.54897959184 -4.0 3.92 3.54897959184

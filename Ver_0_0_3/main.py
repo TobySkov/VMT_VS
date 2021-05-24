@@ -30,10 +30,10 @@ def main():
     info["raytracing_resolution"] = "default" #Options -1/0/1/2/3/"default"
 
     #Running raytracing
-    #raytracing(info)
+    raytracing(info)
 
     #Running postprocessing
-    #raytracing_postprocessing(info)
+    raytracing_postprocessing(info)
 
     #Running ISO13790
     ISO13790(info)

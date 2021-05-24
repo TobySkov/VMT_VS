@@ -8,7 +8,7 @@ def ISO13790(info):
 
     run_ISO13790(info)
 
-    #window_output(info)
+    window_output(info)
 
 
 
@@ -65,17 +65,17 @@ def run_ISO13790(info):
 
     # 1200 J/(m3.K)
     H__ve_infil_1_m2 = np.ones((8760))*(1200*0.0001)    #Per exposed area, (0.0001 m3/(s.m2))
-    H__ve_venti_1_m2 = 0*occ_sch*(1200*0.0012)            #Per floor area, (q__tot = 1.2 l/(s.m2) = 0.0012 m3/(s.m2))
+    H__ve_venti_1_m2 = occ_sch*(1200*0.0012)            #Per floor area, (q__tot = 1.2 l/(s.m2) = 0.0012 m3/(s.m2))
     
     setpoint_heating = 20.0
     setpoint_cooling = 26.0
     
-    Phi__int_people_Wm2 = 0*108*(1/15) #108 W/person, 15 m2/person
-    Phi__int_equip_Wm2 = 0*5 #5 W/m2 equipment
-    Phi__int_light_Wm2 = 0*5 #5 W/m2 Lighting 
+    Phi__int_people_Wm2 = 108*(1/15) #108 W/person, 15 m2/person
+    Phi__int_equip_Wm2 = 5 #5 W/m2 equipment
+    Phi__int_light_Wm2 = 5 #5 W/m2 Lighting 
     Phi__int_Wm2 = occ_sch*(Phi__int_people_Wm2 + Phi__int_equip_Wm2 + Phi__int_light_Wm2)
 
-    #Phi_sol_2d_W = info["Phi_sol_2d_W"]
+    Phi_sol_2d_W = info["Phi_sol_2d_W"]
 
     start_idx = 0
     end_idx = 0
@@ -105,10 +105,10 @@ def run_ISO13790(info):
                        A__f, A__t, A__m, C__m,
                        setpoint_cooling, setpoint_heating])
 
-        #end_idx += room["room_aperture_mesh_face_count"]
-        #Phi__sol = Phi_sol_2d_W[start_idx:end_idx,:].sum(axis=0)
-        #start_idx += room["room_aperture_mesh_face_count"]
-        Phi__sol = np.zeros((8760))
+        end_idx += room["room_aperture_mesh_face_count"]
+        Phi__sol = Phi_sol_2d_W[start_idx:end_idx,:].sum(axis=0)
+        start_idx += room["room_aperture_mesh_face_count"]
+
 
         Phi__int = Phi__int_Wm2*A__f
 

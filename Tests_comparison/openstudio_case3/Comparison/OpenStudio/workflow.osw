@@ -1,0 +1,20 @@
+{
+    "weather_file": "C:\\Users\\Pedersen_Admin\\ladybug_tools\\resources\\weather\\DNK_Copenhagen.061800_IWEC\\DNK_Copenhagen.061800_IWEC.epw", 
+    "measure_paths": [
+        "C:\\Users\\Pedersen_Admin\\ladybug_tools\\resources\\measures\\honeybee_openstudio_gem\\lib\\measures"
+    ], 
+    "steps": [
+        {
+            "arguments": {
+                "model_json": "C:\\Users\\Pedersen_Admin\\OneDrive - Perkins and Will\\Documents\\GitHub\\VMT_VS\\Tests_comparison\\openstudio_case3\\Comparison\\OpenStudio\\Comparison.hbjson"
+            }, 
+            "measure_dir_name": "from_honeybee_model"
+        }, 
+        {
+            "arguments": {
+                "simulation_parameter_json": "C:\\Users\\Pedersen_Admin\\OneDrive - Perkins and Will\\Documents\\GitHub\\VMT_VS\\Tests_comparison\\openstudio_case3\\Comparison\\OpenStudio\\simulation_parameter.json"
+            }, 
+            "measure_dir_name": "from_honeybee_simulation_parameter"
+        }
+    ]
+}

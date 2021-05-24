@@ -16,7 +16,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 #%%
 
-def r2_plot(data_EP, data_ISO, title):
+def r2_plot(data_EP, data_ISO, title, filename):
 
     both_data = np.concatenate((data_EP, data_ISO))
     min_val = np.min(both_data)
@@ -33,13 +33,13 @@ def r2_plot(data_EP, data_ISO, title):
     plt.xlabel("EnergyPlus", fontsize=12)
     plt.ylabel("ISO13790", fontsize=12)
     plt.title(f"{title}. R2 = {r2:.6f}", fontsize=14)
-    path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\openstudio_case1\plots"
-    plt.savefig(path + "\\" + title.replace(" [W]",".png"), dpi=500, bbox_inches = 'tight', pad_inches = 0)
+    path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\plots_case1"
+    plt.savefig(path + "\\" + filename + ".png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
     plt.show()
 
 
 #%%
-def plot_annual_data(data, title):
+def plot_annual_data(data, title, filename):
     
     data_2d = np.zeros((24,365))
     k = 0
@@ -54,8 +54,8 @@ def plot_annual_data(data, title):
     plt.title(title)
     plt.xlabel("Days in year")
     plt.ylabel("Hours in day")
-    path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\openstudio_case1\plots"
-    plt.savefig(path + "\\" + title.replace(" [W]",".png"), dpi=500, bbox_inches = 'tight', pad_inches = 0)
+    path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\plots_case1"
+    plt.savefig(path + "\\" + filename + ".png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
     plt.show()
     
 
@@ -71,7 +71,8 @@ def load_and_plot():
         with open(file, 'rb') as pkl_file:
             output = np.array(pickle.load(pkl_file))
         title = f"Face {i}, Heat Storage Rate [W]"
-        #plot_annual_data(output, title)
+        filename = f"Face {i}, Heat Storage Rate"
+        plot_annual_data(output, title, filename)
         results[title] = output
         
     for i in range(6):
@@ -79,7 +80,8 @@ def load_and_plot():
         with open(file, 'rb') as pkl_file:
             output = -np.array(pickle.load(pkl_file))
         title = f"Face {i}, Outside Face Conduction Heat Transfer Rate [W]"
-        #plot_annual_data(output, title)
+        filename = f"Face {i}, Outside Face Conduction Heat Transfer Rate"
+        plot_annual_data(output, title, filename)
         results[title] = output
         
         
@@ -88,7 +90,8 @@ def load_and_plot():
         with open(file, 'rb') as pkl_file:
             output = np.array(pickle.load(pkl_file))
         title = f"Face {i}, Inside Face Conduction Heat Transfer Rate [W]"
-        #plot_annual_data(output, title)
+        filename = f"Face {i}, Inside Face Conduction Heat Transfer Rate"
+        plot_annual_data(output, title, filename)
         results[title] = output
         
     
@@ -112,7 +115,8 @@ def calc_sum_internal_transfer_EP(results):
         EP_sum_inside_transfer += results[title] 
 
     title = "EnergyPlus, total inside conduction heat transfer rate [W]"
-    plot_annual_data(EP_sum_inside_transfer, title)
+    filename = "EnergyPlus, total inside conduction heat transfer rate"
+    plot_annual_data(EP_sum_inside_transfer, title, filename)
     
     return EP_sum_inside_transfer
 
@@ -131,15 +135,18 @@ file = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VM
 with open(file, 'rb') as pkl_file:
     iso_sum_inside_transfer = 1000*np.array(pickle.load(pkl_file))
 title = "ISO13790, total inside conduction heat transfer rate [W]"
-plot_annual_data(iso_sum_inside_transfer, title)
+filename = "ISO13790, total inside conduction heat transfer rate"
+plot_annual_data(iso_sum_inside_transfer, title, filename)
 
 title = "Difference, total inside conduction heat transfer rate [W]"
-plot_annual_data(EP_sum_inside_transfer - iso_sum_inside_transfer, title)
+filename = "Difference, total inside conduction heat transfer rate"
+plot_annual_data(EP_sum_inside_transfer - iso_sum_inside_transfer, title, filename)
 
 
 r2_plot(data_EP = EP_sum_inside_transfer, 
         data_ISO = iso_sum_inside_transfer, 
-        title = "Total inside conduction heat transfer rate [W]")
+        title = "Total inside conduction heat transfer rate [W]",
+        filename = "Total inside conduction heat transfer rate")
 
 #%%
 
@@ -154,25 +161,29 @@ with open(file, 'rb') as pkl_file:
     iso_heating = 1000*np.array(pickle.load(pkl_file))
 
 title = "EP, heating load [W]"
-plot_annual_data(EP_heating, title)
+filename = "EP, heating load"
+plot_annual_data(EP_heating, title, filename)
 
 title = "ISO13790, heating load [W]"
-plot_annual_data(iso_heating, title)
+filename = "ISO13790, heating load"
+plot_annual_data(iso_heating, title, filename)
 
 title = "Difference, heating load [W]"
-plot_annual_data(EP_heating - iso_heating, title)
+filename = "Difference, heating load"
+plot_annual_data(EP_heating - iso_heating, title, filename)
 
 
 r2_plot(data_EP = EP_heating, 
         data_ISO = iso_heating, 
-        title = "Heating load [W]")
+        title = "Heating load [W]", 
+        filename = "Heating load")
 
 
 
 
 #%%
 
-#comparing heating
+#comparing infiltration
 file = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\openstudio_case1\infiltration_load.pkl"
 with open(file, 'rb') as pkl_file:
     EP_infil = 1000*np.array(pickle.load(pkl_file))
@@ -183,35 +194,104 @@ with open(file, 'rb') as pkl_file:
     iso_infil = 1000*np.array(pickle.load(pkl_file))
 
 title = "EP, infiltration load [W]"
-plot_annual_data(EP_infil, title)
+filename = "EP, infiltration load"
+plot_annual_data(EP_infil, title, filename)
 
 title = "ISO13790, infiltration load [W]"
-plot_annual_data(iso_infil, title)
+filename = "ISO13790, infiltration load"
+plot_annual_data(iso_infil, title, filename)
 
 title = "Difference, infiltration load [W]"
-plot_annual_data(EP_infil - iso_infil, title)
+filename = "Difference, infiltration load"
+plot_annual_data(EP_infil - iso_infil, title, filename)
 
 
 r2_plot(data_EP = EP_infil, 
         data_ISO = iso_infil, 
-        title = "Infiltration load [W]")
+        title = "Infiltration load [W]",
+        filename = "Infiltration load")
 
 
 #%%
 
 diff_eq_iso = iso_sum_inside_transfer + iso_infil + iso_heating
-title = "ISO, control"
-plot_annual_data(diff_eq_iso , title)
+title = "ISO, balance [W]"
+filename = "ISO, balance"
+plot_annual_data(diff_eq_iso , title, filename)
+
+np.min(diff_eq_iso)
+np.max(diff_eq_iso)
+np.mean(diff_eq_iso)
+np.std(diff_eq_iso)
 
 diff_eq_ep = EP_sum_inside_transfer + EP_infil + EP_heating
-title = "EP, control"
-plot_annual_data(diff_eq_ep , title)
+title = "EP, balance [W]"
+filename = "EP, balance"
+plot_annual_data(diff_eq_ep , title, filename)
+
+np.min(diff_eq_ep)
+np.max(diff_eq_ep)
+np.mean(diff_eq_ep)
+np.std(diff_eq_ep)
 
 #%%
 #comparing air temp
+file = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\openstudio_case1\air_temp.pkl"
+with open(file, 'rb') as pkl_file:
+    EP_air = np.array(pickle.load(pkl_file))
+
+
+file = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\iso13790_case1\output\ISO13790\Room_3_69a20c51__theta__air.pkl"
+with open(file, 'rb') as pkl_file:
+    iso_air = np.array(pickle.load(pkl_file))
+
+title = "EP, air temperature [C]"
+filename = "EP, air temperature"
+plot_annual_data(EP_air, title, filename)
+
+title = "ISO13790, air temperature [C]"
+filename = "ISO13790, air temperature"
+plot_annual_data(iso_air, title, filename)
+
+title = "Difference, air temperature [C]"
+filename = "Difference, air temperature"
+plot_annual_data(EP_air - iso_air, title, filename)
+
+
+r2_plot(data_EP = EP_air, 
+        data_ISO = iso_air, 
+        title = "Air temperature [C]", 
+        filename = "Air temperature")
+
 
 
 #%%
 #comparing op temp
+file = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\openstudio_case1\oper_temp.pkl"
+with open(file, 'rb') as pkl_file:
+    EP_op = np.array(pickle.load(pkl_file))
+
+
+file = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\iso13790_case1\output\ISO13790\Room_3_69a20c51__theta__op.pkl"
+with open(file, 'rb') as pkl_file:
+    iso_op = np.array(pickle.load(pkl_file))
+
+title = "EP, operative temperature [C]"
+filename = "EP, operative temperature"
+plot_annual_data(EP_op, title, filename)
+
+title = "ISO13790, operative temperature [C]"
+filename = "ISO13790, operative temperature"
+plot_annual_data(iso_op, title, filename)
+
+title = "Difference, operative temperature [C]"
+filename = "Difference, operative temperature"
+plot_annual_data(EP_op - iso_op, title, filename)
+
+
+r2_plot(data_EP = EP_op, 
+        data_ISO = iso_op, 
+        title = "Operative temperature [C]", 
+        filename = "Operative temperature")
 
 
