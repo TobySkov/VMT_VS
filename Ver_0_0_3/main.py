@@ -40,7 +40,7 @@ def main():
     
     end = time.time()
     print("+++++ VMT backend - done +++++")
-    print(f"+++++ Wall time: {(end-start)/60} [min] +++++")
+    print(f"+++++ Wall time: {(end-start)} [s] +++++")
 
 
 if __name__ == "__main__":

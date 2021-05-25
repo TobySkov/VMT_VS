@@ -1,8 +1,7 @@
 ﻿  CPP_ISO13790_Source.cpp
      Creating library C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\x64\Release\CPP_ISO13790.lib and object C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\x64\Release\CPP_ISO13790.exp
   Generating code
-  2 of 2040 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB not found, fall back to full compilation.
+  All 2032 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   CPP_ISO13790.vcxproj -> C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\x64\Release\CPP_ISO13790.pyd

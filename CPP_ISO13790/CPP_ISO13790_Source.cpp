@@ -175,7 +175,7 @@ py::array_t<double> run_CPP_ISO13790(py::array_t<double> np_theta__e, py::array_
             warmup = false;
         }
         warmup_day += 1;
-        cout << "Warmup day: " << warmup_day << "  Cummulative difference: " << cum_diff << "\n";
+        //cout << "Warmup day: " << warmup_day << "  Cummulative difference: " << cum_diff << "\n";
         vec_theta__m_t_old = vec_theta__m_t_new;
     }
 

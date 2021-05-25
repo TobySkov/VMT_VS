@@ -126,7 +126,7 @@ def calc_sum_internal_transfer_EP(results):
 results = load_and_plot()
 EP_sum_inside_transfer = calc_sum_internal_transfer_EP(results)
 
-
+#plot_annual_data(EP_sum_inside_transfer, title = "EP, check", filename = "delete")
 
 #%%
 

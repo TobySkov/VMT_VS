@@ -2,11 +2,14 @@ import pickle
 import numpy as np
 from CPP_ISO13790 import run_CPP_ISO13790
 from postprocessing import gen_occ_sch
-
+import time
 
 def ISO13790(info):
 
+    start = time.time()
     run_ISO13790(info)
+    end = time.time()
+    print(f"+++++ run_ISO13790, wall time: {end-start} [s] +++++")
 
     window_output(info)
 

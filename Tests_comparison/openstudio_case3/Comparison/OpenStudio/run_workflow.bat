@@ -1,2 +1,0 @@
-C:
-"C:\openstudio-3.1.0\bin\openstudio.exe" -I "C:\Users\Pedersen_Admin\ladybug_tools\resources\measures\honeybee_openstudio_gem\lib" run -m -w "C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_comparison\openstudio_case3\Comparison\OpenStudio\workflow.osw"
