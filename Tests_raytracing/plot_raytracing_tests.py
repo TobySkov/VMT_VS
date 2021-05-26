@@ -75,6 +75,8 @@ plt.xlabel("Number of triangles in scene", fontsize=12)
 plt.ylabel("Walltime [s]", fontsize=12)
 plt.title("Oconv function calls benchmark", fontsize=14)
 plt.boxplot(data,labels=["3500", "14000", "56000", "224000", "896000"])
+path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_raytracing\plots"
+plt.savefig(path + "\\" + "oconv.png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
 plt.show()
 
 
@@ -87,6 +89,9 @@ plt.xlabel("Number of triangles in scene", fontsize=12)
 plt.ylabel("Natural logarithm of walltime [ln(s)]", fontsize=12)
 plt.title("Oconv function calls benchmark", fontsize=14)
 plt.boxplot(log_data,labels=["3500", "14000", "56000", "224000", "896000"])
+path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_raytracing\plots"
+plt.savefig(path + "\\" + "ln_oconv.png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
+
 plt.show()
 
 #%% Plot read stdin
@@ -123,6 +128,8 @@ plt.ylabel("Walltime [s]", fontsize=12)
 plt.title("Read stdin function calls benchmark", fontsize=14)
 plt.boxplot(data,labels=["4", "16", "64", "256", "1024", "4096",
                          "16384", "65536", "262144", "1048576"])
+path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_raytracing\plots"
+plt.savefig(path + "\\" + "stdin.png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
 plt.show()
 
 
@@ -136,6 +143,8 @@ plt.ylabel("Natural logarithm of walltime [ln(s)]", fontsize=12)
 plt.title("Read stdin function calls benchmark", fontsize=14)
 plt.boxplot(log_data,labels=["4", "16", "64", "256", "1024", "4096",
                          "16384", "65536", "262144", "1048576"])
+path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_raytracing\plots"
+plt.savefig(path + "\\" + "ln_stdin.png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
 plt.show()
 
 
@@ -176,6 +185,8 @@ plt.title("Rfluxmtx function calls benchmark", fontsize=14)
 plt.grid()
 plt.legend()
 plt.xticks(x, labels=["4", "16", "64", "256", "1024", "4096", "16384", "65536", "262144", "1048576"], rotation = 70, fontsize=12)
+path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_raytracing\plots"
+plt.savefig(path + "\\" + "rfluxmtx.png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
 plt.show()
 
 
@@ -191,6 +202,8 @@ plt.title("Rfluxmtx function calls benchmark", fontsize=14)
 plt.grid()
 plt.legend()
 plt.xticks(x, labels=["4", "16", "64", "256", "1024", "4096", "16384", "65536", "262144", "1048576"], rotation = 70, fontsize=12)
+path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_raytracing\plots"
+plt.savefig(path + "\\" + "ln_rfluxmtx.png", dpi=500, bbox_inches = 'tight', pad_inches = 0)
 plt.show()
 
 

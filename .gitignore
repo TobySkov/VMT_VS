@@ -12,12 +12,12 @@ Tests_comparison/openstudio_case3_timing
 Tests_comparison/plots_case1
 Tests_comparison/plots_case2
 Tests_comparison/plots_case3
-
+Tests_comparison/plots_daylight
 
 .vs/
 
 Tests_raytracing/output
-
+Tests_raytracing/plots
 Tests_raytracing/Triangles_3500__Points_4
 Tests_raytracing/Triangles_3500__Points_16
 Tests_raytracing/Triangles_3500__Points_64
