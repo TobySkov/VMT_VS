@@ -8,6 +8,8 @@ Tests_comparison/openstudio_case2/Comparison
 Tests_comparison/openstudio_case3/Comparison
 Tests_comparison/openstudio_case3_timing
 
+Tests_versions/2PM
+Tests_versions/3PM
 
 Tests_comparison/plots_case1
 Tests_comparison/plots_case2
