@@ -7,6 +7,14 @@ import numpy as np
 import cupy as cp
 import time
 from subprocess import Popen, PIPE
+import os
+
+
+path = r"C:\Users\Pedersen_Admin\OneDrive - Perkins and Will\Documents\GitHub\VMT_VS\Tests_matmul"
+print(os.getcwd())
+os.chdir(path)
+print(os.getcwd())
+
 
 
 #%%
@@ -221,10 +229,12 @@ for i in range(len(no_sensor_points_list)):
     end = time.time()
     numpy_write_results_matrix_list.append((end-start))
     
+    print(f"{i+1}/{len(no_sensor_points_list)}")
+    
 #%%
 with open("numpy_timings.txt","w") as outfile:
     outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tmatmul [s],\tscale [s],\tsave [s]\n")
-    for i in range(len(duration_dctimestep_list)):
+    for i in range(len(numpy_reading_dc_matrix_list)):
         outfile.write(f"{numpy_reading_dc_matrix_list[i]},\t" +\
                       f"{numpy_reading_sky_matrix_list[i]},\t" +\
                       f"{numpy_matmul_list[i]},\t" +\
@@ -301,11 +311,18 @@ for i in range(len(no_sensor_points_list)):
     np.savetxt(ill_path,result_matrix)
     end = time.time()
     cupy_write_results_matrix_list.append((end-start))
+    
+    del dc_matrix_gpu
+    del sky_matrix_gpu
+    del result_matrix_gpu
+    cp._default_memory_pool.free_all_blocks()
+    cp._default_pinned_memory_pool.free_all_blocks()
+    print(f"{i+1}/{len(no_sensor_points_list)}")
 
 #%%
 with open("cupy_timings.txt","w") as outfile:
     outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tcopy_dc_matrix [s],\tcopy_sky_matrix [s],\tmatmul [s],\tscale [s],\tcopy_results_matrix [s],\tsave [s]\n")
-    for i in range(len(duration_dctimestep_list)):
+    for i in range(len(cupy_reading_dc_matrix_list)):
         outfile.write(f"{cupy_reading_dc_matrix_list[i]},\t" +\
                       f"{cupy_reading_sky_matrix_list[i]},\t" +\
                       f"{cupy_copy_dc_matrix_list[i]},\t" +\
@@ -315,11 +332,12 @@ with open("cupy_timings.txt","w") as outfile:
                       f"{cupy_copy_results_matrix_list[i]},\t" +\
                       f"{cupy_write_results_matrix_list[i]}\n"
                       )
-    
+
+
 #%% binary reader and saver
 
 
-def run_rfluxmtx_binary(cmd_list, grids_files_list):
+def run_rfluxmtx_binary(cmd_list, grids_files_list, no_points):
     
     print("START - Subprocess: {}".format(cmd_list[0]))
     p = Popen(cmd_list, stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -330,26 +348,18 @@ def run_rfluxmtx_binary(cmd_list, grids_files_list):
     print("DONE  - Subprocess: {}. Returncode: {}".format(cmd_list[0],rc))
     
     start = time.time()
-    #Reading header
-    for binary_line in output:
-        line = binary_line.decode()
-        if "NROWS" in line:
-            nrows = int(line.split("=")[-1])
-        elif "NCOLS" in line:
-            ncols = int(line.split("=")[-1])
-        elif "NCOMP" in line:
-            ncomp = int(line.split("=")[-1])
-        elif "FORMAT" in line:
-            break
-
-    #Reading data
-    #https://stackoverflow.com/questions/11760095/convert-binary-string-to-numpy-array
-    data = np.fromfile(output, dtype=np.dtype('>f4')).reshape(nrows, ncols, ncomp)
-    #data = np.fromfile(reader, dtype=np.float32).reshape(nrows, ncols, ncomp)
+    dc_matrix = np.zeros((no_points,146), dtype = np.float64)
+    all_data = output.decode().split("\r\n\r\n")[1].split("\r\n")
+    del all_data[-1]
+    for i, pts in enumerate(all_data):
+            pts_split = pts.split("\t")
+            del pts_split[-1]
+            for j in range(146):
+                dc_matrix[i][j] = pts_split[j*3]
     end = time.time()
     duration = end-start
     
-    return data, duration
+    return dc_matrix, duration
 
 #%%
 bytes_read_list = []
@@ -368,7 +378,8 @@ for i in range(len(no_sensor_points_list)):
                 "rfluxsky.rad" 
                 ]
 
-    dc_matrix, duration = run_rfluxmtx_binary(cmd_list, grids_files_list)
+    dc_matrix, duration = run_rfluxmtx_binary(cmd_list, grids_files_list,
+                                              no_sensor_points_list[i])
     bytes_read_list.append(duration)
 
 
@@ -380,6 +391,7 @@ for i in range(len(no_sensor_points_list)):
     np.save(path, result_matrix)
     end = time.time()
     binary_write_list.append((end-start))
+    print(f"{i+1}/{len(no_sensor_points_list)}")
 
 
 #%%
@@ -387,7 +399,7 @@ for i in range(len(no_sensor_points_list)):
 
 with open("binary_timings.txt","w") as outfile:
     outfile.write("parse bytes [s],\twrite binary [s]\n")
-    for i in range(len(duration_dctimestep_list)):
+    for i in range(len(bytes_read_list)):
         outfile.write(f"{bytes_read_list[i]},\t{binary_write_list[i]}\n")
 
 
