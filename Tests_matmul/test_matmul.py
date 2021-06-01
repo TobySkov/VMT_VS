@@ -124,10 +124,14 @@ def run_rmtxop(cmd_list, output_filename):
 
 #%%
 
-
 no_sensor_points_list = np.array([9, 36, 64, 100, 144, 225, 400, 900, 
                                   1600, 2500, 3481, 5625, 10000, 14400,
                                   22500, 40000, 62500, 90000])
+
+no_sensor_points_list_dctimestep = np.array([9, 36, 64, 100, 144, 225, 400, 900, 
+                                             1600, 2500, 3481, 5625, 10000, 14400,
+                                             22500, 40000, 62500])
+
 
 #%%
 #f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\Daylight\\Radiance\\model\\aperture\\aperture.mat",
@@ -136,6 +140,7 @@ no_sensor_points_list = np.array([9, 36, 64, 100, 144, 225, 400, 900,
 #f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\Daylight\\Radiance\\model\\scene\\envelope.rad"
 
 #%% run rluxmtx
+"""
 for i in range(len(no_sensor_points_list)):
     grids_files_list = [f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\Daylight\\Radiance\\model\\grid\\Room_6.pts"]
     
@@ -150,20 +155,24 @@ for i in range(len(no_sensor_points_list)):
                  output_filename = f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\output.dc")
     
     print(f"{i+1}/{len(no_sensor_points_list)}")
-
+"""
     
 #%% Comparing dctimestep 
     
+with open("radiance_timings.txt","w") as outfile:
+    outfile.write("dctimestep wall time [s],\trmtxop wall time [s]\n")
+    
+    
 duration_dctimestep_list = []
 duration_rmtxop_list = []
-for i in range(len(no_sensor_points_list)):
+for i in range(len(no_sensor_points_list_dctimestep)):
     
-    dc_filename = f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\output.dc"
+    dc_filename = f"Geometry\\Sensorpoints__{no_sensor_points_list_dctimestep[i]}\\output.dc"
     sky_filename = "DNK_Copenhagen.061800_IWEC.smx"
     
     #Dctimestep and rmtxop
-    rgb_path = f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\output.rgb"
-    ill_path = f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\output.ill"
+    rgb_path = f"Geometry\\Sensorpoints__{no_sensor_points_list_dctimestep[i]}\\output.rgb"
+    ill_path = f"Geometry\\Sensorpoints__{no_sensor_points_list_dctimestep[i]}\\output.ill"
     
     cmd_list = ["C:\\Radiance\\bin\\dctimestep",
                 dc_filename,
@@ -178,15 +187,20 @@ for i in range(len(no_sensor_points_list)):
     
     duration_rmtxop = run_rmtxop(cmd_list, output_filename = ill_path)
     duration_rmtxop_list.append(duration_rmtxop)
-    print(f"{i+1}/{len(no_sensor_points_list)}")
+    
+    
+    with open("radiance_timings.txt","a") as outfile:
+        outfile.write(f"{duration_dctimestep_list[i]},\t{duration_rmtxop_list[i]}\n")
+    
+    print(f"{i+1}/{len(no_sensor_points_list_dctimestep)}")
     
     
 #%% Save dctimestep results
 
-with open("radiance_timings.txt","w") as outfile:
-    outfile.write("dctimestep wall time [s],\trmtxop wall time [s]\n")
-    for i in range(len(duration_dctimestep_list)):
-        outfile.write(f"{duration_dctimestep_list[i]},\t{duration_rmtxop_list[i]}\n")
+#with open("radiance_timings.txt","w") as outfile:
+#    outfile.write("dctimestep wall time [s],\trmtxop wall time [s]\n")
+#    for i in range(len(duration_dctimestep_list)):
+#        outfile.write(f"{duration_dctimestep_list[i]},\t{duration_rmtxop_list[i]}\n")
 
 
 
