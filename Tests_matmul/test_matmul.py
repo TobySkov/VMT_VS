@@ -128,11 +128,12 @@ no_sensor_points_list = np.array([9, 36, 64, 100, 144, 225, 400, 900,
                                   1600, 2500, 3481, 5625, 10000, 14400,
                                   22500, 40000, 62500, 90000])
 
+"""
 no_sensor_points_list_dctimestep = np.array([9, 36, 64, 100, 144, 225, 400, 900, 
                                              1600, 2500, 3481, 5625, 10000, 14400,
                                              22500, 40000, 62500])
 
-
+"""
 #%%
 #f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\Daylight\\Radiance\\model\\aperture\\aperture.mat",
 #f"Geometry\\Sensorpoints__{no_sensor_points_list[i]}\\Daylight\\Radiance\\model\\aperture\\aperture.rad",
@@ -158,7 +159,7 @@ for i in range(len(no_sensor_points_list)):
 """
     
 #%% Comparing dctimestep 
-    
+"""
 with open("radiance_timings.txt","w") as outfile:
     outfile.write("dctimestep wall time [s],\trmtxop wall time [s]\n")
     
@@ -202,10 +203,13 @@ for i in range(len(no_sensor_points_list_dctimestep)):
 #    for i in range(len(duration_dctimestep_list)):
 #        outfile.write(f"{duration_dctimestep_list[i]},\t{duration_rmtxop_list[i]}\n")
 
-
+"""
 
 #%% with numpy 
 
+with open("numpy_timings.txt","w") as outfile:
+    outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tmatmul [s],\tscale [s],\tsave [s]\n")
+    
 numpy_reading_dc_matrix_list = []
 numpy_reading_sky_matrix_list = []
 numpy_matmul_list = []
@@ -243,9 +247,18 @@ for i in range(len(no_sensor_points_list)):
     end = time.time()
     numpy_write_results_matrix_list.append((end-start))
     
+    with open("numpy_timings.txt","a") as outfile:
+        outfile.write(f"{numpy_reading_dc_matrix_list[i]},\t" +\
+                      f"{numpy_reading_sky_matrix_list[i]},\t" +\
+                      f"{numpy_matmul_list[i]},\t" +\
+                      f"{numpy_scale_list[i]},\t" +\
+                      f"{numpy_write_results_matrix_list[i]}\n"
+                      )
+        
     print(f"{i+1}/{len(no_sensor_points_list)}")
     
 #%%
+"""
 with open("numpy_timings.txt","w") as outfile:
     outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tmatmul [s],\tscale [s],\tsave [s]\n")
     for i in range(len(numpy_reading_dc_matrix_list)):
@@ -255,8 +268,11 @@ with open("numpy_timings.txt","w") as outfile:
                       f"{numpy_scale_list[i]},\t" +\
                       f"{numpy_write_results_matrix_list[i]}\n"
                       )
+"""
         
 #%% and with cupy
+with open("cupy_timings.txt","w") as outfile:
+    outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tcopy_dc_matrix [s],\tcopy_sky_matrix [s],\tmatmul [s],\tscale [s],\tcopy_results_matrix [s],\tsave [s]\n")
 
 cupy_reading_dc_matrix_list = []
 cupy_reading_sky_matrix_list = []
@@ -331,9 +347,23 @@ for i in range(len(no_sensor_points_list)):
     del result_matrix_gpu
     cp._default_memory_pool.free_all_blocks()
     cp._default_pinned_memory_pool.free_all_blocks()
+    
+    with open("cupy_timings.txt","a") as outfile:
+        outfile.write(f"{cupy_reading_dc_matrix_list[i]},\t" +\
+                      f"{cupy_reading_sky_matrix_list[i]},\t" +\
+                      f"{cupy_copy_dc_matrix_list[i]},\t" +\
+                      f"{cupy_copy_sky_matrix_list[i]},\t" +\
+                      f"{cupy_matmul_list[i]},\t" +\
+                      f"{cupy_scale_list[i]},\t" +\
+                      f"{cupy_copy_results_matrix_list[i]},\t" +\
+                      f"{cupy_write_results_matrix_list[i]}\n"
+                      )
+        
+        
     print(f"{i+1}/{len(no_sensor_points_list)}")
 
 #%%
+"""
 with open("cupy_timings.txt","w") as outfile:
     outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tcopy_dc_matrix [s],\tcopy_sky_matrix [s],\tmatmul [s],\tscale [s],\tcopy_results_matrix [s],\tsave [s]\n")
     for i in range(len(cupy_reading_dc_matrix_list)):
@@ -346,7 +376,7 @@ with open("cupy_timings.txt","w") as outfile:
                       f"{cupy_copy_results_matrix_list[i]},\t" +\
                       f"{cupy_write_results_matrix_list[i]}\n"
                       )
-
+"""
 
 #%% binary reader and saver
 
