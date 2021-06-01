@@ -11,7 +11,7 @@ def ISO13790(info):
     end = time.time()
     print(f"+++++ run_ISO13790, wall time: {end-start} [s] +++++")
 
-    window_output(info)
+    #window_output(info)
 
 
 

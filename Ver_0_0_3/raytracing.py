@@ -17,8 +17,8 @@ def raytracing(info):
     #Run energy inside raytracing command
     timer(run_rfluxmtx, info, info["raytracing_resolution"], "energy_inside")
 
-    #Run energy inside raytracing command
-    timer(run_rfluxmtx, info, info["raytracing_resolution"], "energy_outside")
+    #Run energy outside raytracing command
+    #timer(run_rfluxmtx, info, info["raytracing_resolution"], "energy_outside")
 
 
 

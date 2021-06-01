@@ -121,8 +121,9 @@ def define_dict(vmt_folder, sim_folder, radiance_folder, accelerad_folder):
             "epw_file": Path(info_ini["epw_file"]),
             "rfluxsky": dst,
             "no_daylight_sensorpoints": int(info_ini["no_daylight_sensorpoints"]),
-            "no_energy_inside_sensorpoints": int(info_ini["no_energy_inside_sensorpoints"]),
-            "no_energy_outside_sensorpoints": int(info_ini["no_energy_outside_sensorpoints"])}
+            "no_energy_inside_sensorpoints": int(info_ini["no_energy_inside_sensorpoints"])}
+
+    #"no_energy_outside_sensorpoints": int(info_ini["no_energy_outside_sensorpoints"])
 
     info["daylight_dc_matrix"] = info["sim_folder"].joinpath(f"output\\daylight_dc.txt")
     info["energy_inside_dc_matrix"] = info["sim_folder"].joinpath(f"output\\energy_inside_dc.txt")

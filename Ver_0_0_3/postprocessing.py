@@ -15,7 +15,7 @@ def raytracing_postprocessing(info):
     energy(info)
 
     #Energy matmul 
-    energy_outside(info)
+    #energy_outside(info)
 
 
 def energy_outside(info):
