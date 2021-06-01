@@ -107,7 +107,8 @@
 size(10);
 size(100);
 size(1000);
-size(10000);</Text-field>
+size(10000);
+evalf(size(40000)/1000);</Text-field>
 </Input>
 <Output><Text-field style="2D Output" layout="Maple Output"><Equation executable="false" style="2D Output" display="LUkjbW5HNiMvSSttb2R1bGVuYW1lRzYiSSxUeXBlc2V0dGluZ0dJKF9zeXNsaWJHRic2JFEpMTAzMDI5MjhGJy8lLG1hdGh2YXJpYW50R1Enbm9ybWFsRic=">IilHSEk1</Equation></Text-field>
 </Output>
@@ -118,6 +119,8 @@ size(10000);</Text-field>
 <Output><Text-field style="2D Output" layout="Maple Output"><Equation executable="false" style="2D Output" display="LUkjbW5HNiMvSSttb2R1bGVuYW1lRzYiSSxUeXBlc2V0dGluZ0dJKF9zeXNsaWJHRic2JFEpODE0Nzk2ODBGJy8lLG1hdGh2YXJpYW50R1Enbm9ybWFsRic=">Iikhb3o5KQ==</Equation></Text-field>
 </Output>
 <Output><Text-field style="2D Output" layout="Maple Output"><Equation executable="false" style="2D Output" display="LUkjbW5HNiMvSSttb2R1bGVuYW1lRzYiSSxUeXBlc2V0dGluZ0dJKF9zeXNsaWJHRic2JFEqNzIyNzExNjgwRicvJSxtYXRodmFyaWFudEdRJ25vcm1hbEYn">IiohbzZGcw==</Equation></Text-field>
+</Output>
+<Output><Text-field style="2D Output" layout="Maple Output"><Equation executable="false" style="2D Output" display="LUklbXJvd0c2Iy9JK21vZHVsZW5hbWVHNiJJLFR5cGVzZXR0aW5nR0koX3N5c2xpYkdGJzYmLUkjbW5HRiQ2JFEsMi44NjAxNTE2ODBGJy8lLG1hdGh2YXJpYW50R1Enbm9ybWFsRictSSNtb0dGJDYtUSgmdGltZXM7RidGLy8lJmZlbmNlR1EmZmFsc2VGJy8lKnNlcGFyYXRvckdGOC8lKXN0cmV0Y2h5R0Y4LyUqc3ltbWV0cmljR0Y4LyUobGFyZ2VvcEdGOC8lLm1vdmFibGVsaW1pdHNHRjgvJSdhY2NlbnRHRjgvJSdsc3BhY2VHUSwwLjIyMjIyMjJlbUYnLyUncnNwYWNlR0ZHLUklbXN1cEdGJDYmLUYsNiRRIzEwRidGLy1GLDYkUSI2RidGLy8lMXN1cGVyc2NyaXB0c2hpZnRHUSIwRicvSSttc2VtYW50aWNzR0YkUSJeRidGLw==">JCIrIW9eLCdHISIk</Equation></Text-field>
 </Output>
 </Group>
 <Group labelreference="L57" drawlabel="true" applyint="true" applyrational="true" applyexponent="false">
