@@ -128,6 +128,8 @@ no_sensor_points_list = np.array([9, 36, 64, 100, 144, 225, 400, 900,
                                   1600, 2500, 3481, 5625, 10000, 14400,
                                   22500, 40000, 62500, 90000])
 
+#no_sensor_points_list = np.array([62500, 90000])
+
 """
 no_sensor_points_list_dctimestep = np.array([9, 36, 64, 100, 144, 225, 400, 900, 
                                              1600, 2500, 3481, 5625, 10000, 14400,
@@ -206,7 +208,7 @@ for i in range(len(no_sensor_points_list_dctimestep)):
 """
 
 #%% with numpy 
-
+"""
 with open("numpy_timings.txt","w") as outfile:
     outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tmatmul [s],\tscale [s],\tsave [s]\n")
     
@@ -257,6 +259,7 @@ for i in range(len(no_sensor_points_list)):
         
     print(f"{i+1}/{len(no_sensor_points_list)}")
     
+"""
 #%%
 """
 with open("numpy_timings.txt","w") as outfile:
@@ -269,7 +272,7 @@ with open("numpy_timings.txt","w") as outfile:
                       f"{numpy_write_results_matrix_list[i]}\n"
                       )
 """
-        
+"""  
 #%% and with cupy
 with open("cupy_timings.txt","w") as outfile:
     outfile.write("reading_dc_matrix [s],\treading_sky_matrix [s],\tcopy_dc_matrix [s],\tcopy_sky_matrix [s],\tmatmul [s],\tscale [s],\tcopy_results_matrix [s],\tsave [s]\n")
@@ -361,7 +364,7 @@ for i in range(len(no_sensor_points_list)):
         
         
     print(f"{i+1}/{len(no_sensor_points_list)}")
-
+"""
 #%%
 """
 with open("cupy_timings.txt","w") as outfile:
